@@ -162,6 +162,7 @@ export default function App() {
   };
 
   const vote = (id, dir) => {
+    if (!isLoggedIn) { setView('auth'); return; }
     setThreads(prev => prev.map(t => t.id === id ? { ...t, votes: t.votes + dir } : t));
   };
 
@@ -222,7 +223,7 @@ export default function App() {
         {['home','blog','forum','profile'].map(v => (
           <li key={v}>
             <button className={view === v ? 'active' : ''} onClick={() => { 
-              const needsAuth = (v === 'forum' || v === 'profile');
+              const needsAuth = (v === 'profile');
               if (needsAuth && !isLoggedIn) setView('auth'); 
               else setView(v); 
             }}>
