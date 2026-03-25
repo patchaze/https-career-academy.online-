@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import { blogArticles } from './data/blogData';
 import { forumThreads, forumCategories } from './data/forumData';
@@ -81,7 +82,14 @@ const getLevel = (xp) => {
 };
 
 export default function App() {
-  const [view, setView]           = useState(() => Cloud.load('academy_view', 'home'));
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Route Mapping
+  const routeMap = { 'home':'/', 'blog':'/discovery', 'forum':'/community', 'profile':'/mastery', 'auth':'/auth' };
+  const backMap = { '/': 'home', '/discovery': 'blog', '/community': 'forum', '/mastery': 'profile', '/auth': 'auth' };
+
+  const [view, setView]           = useState(() => backMap[location.pathname] || 'home');
   const [isLoggedIn, setIsLoggedIn] = useState(() => Cloud.load('academy_loggedIn') === 'true');
   const [isRegister, setIsRegister] = useState(false);
   const [user, setUser]           = useState(() => Cloud.load('academy_user', null));
@@ -102,6 +110,28 @@ export default function App() {
   const [quizResult, setQuizResult] = useState(null);
   const [levelUpToast, setLevelUpToast] = useState(null);
   const [isSyncing, setIsSyncing]       = useState(false);
+
+  // URL Sync Logic
+  useEffect(() => {
+    const p = location.pathname;
+    if (p.startsWith('/player/')) {
+      const modId = parseInt(p.split('/').pop());
+      if (modId && activeRoadmap) {
+        const mod = activeRoadmap.find(m => m.id === modId);
+        if (mod) {
+          setCurrentModule(mod);
+          if (!activeLesson) setActiveLesson(CURRICULUM_POOL[mod.id]?.[0] || null);
+          setView('player');
+          return;
+        }
+      }
+    }
+    const v = backMap[p] || 'home';
+    if (v !== view) setView(v);
+    if (p === '/') setCurrentModule(null);
+  }, [location.pathname, activeRoadmap]);
+
+  const go = (v) => navigate(routeMap[v] || '/');
 
   // Persistence Layer
   useEffect(() => {
@@ -132,11 +162,11 @@ export default function App() {
     const n = e.target.name?.value;
     setUser({ name: n || 'Beta Student', xp: 4200, level: getLevel(4200), streak: 12 });
     setIsLoggedIn(true);
-    setView('home');
+    go('home');
   };
 
   const generate = () => {
-    if (!isLoggedIn) { setView('auth'); return; }
+    if (!isLoggedIn) { go('auth'); return; }
     if (!goal.trim()) return;
     setGenerating(true);
     
@@ -162,7 +192,7 @@ export default function App() {
   };
 
   const vote = (id, dir) => {
-    if (!isLoggedIn) { setView('auth'); return; }
+    if (!isLoggedIn) { go('auth'); return; }
     setThreads(prev => prev.map(t => t.id === id ? { ...t, votes: t.votes + dir } : t));
   };
 
@@ -215,7 +245,7 @@ export default function App() {
   /* ── nav ── */
   const Nav = () => (
     <nav className="nav">
-      <div className="nav-logo" onClick={() => setView('home')}>
+      <div className="nav-logo" onClick={() => go('home')}>
         <div className="nav-logo-icon">C</div>
         <span className="nav-logo-text">Career Academy</span>
       </div>
@@ -224,30 +254,30 @@ export default function App() {
           <li key={v}>
             <button className={view === v ? 'active' : ''} onClick={() => { 
               const needsAuth = (v === 'profile');
-              if (needsAuth && !isLoggedIn) setView('auth'); 
-              else setView(v); 
+              if (needsAuth && !isLoggedIn) go('auth'); 
+              else go(v); 
             }}>
               {v === 'home' ? 'Dashboard' : v === 'blog' ? 'Discovery' : v === 'forum' ? 'Community' : 'Mastery'}
             </button>
           </li>
         ))}
       </ul>
-      {isLoggedIn
-        ? (
-          <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
-            {isSyncing && <div className="sync-badge"><div className="sync-dot"/><span>Syncing</span></div>}
-            <button className="btn btn-ghost" onClick={() => setView('profile')}>👤 {user.name}</button>
-          </div>
-        )
-        : <button className="btn btn-primary" onClick={() => setView('auth')}>Join Academy</button>
-      }
+        {isLoggedIn
+          ? (
+            <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
+              {isSyncing && <div className="sync-badge"><div className="sync-dot"/><span>Syncing</span></div>}
+              <button className="btn btn-ghost" onClick={() => go('profile')}>👤 {user.name}</button>
+            </div>
+          )
+          : <button className="btn btn-primary" onClick={() => go('auth')}>Join Academy</button>
+        }
     </nav>
   );
 
   /* ── AUTH ── */
   if (view === 'auth') return (
     <div className="auth-page fade-up">
-      <div className="auth-back" onClick={() => setView('home')}>
+      <div className="auth-back" onClick={() => go('home')}>
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 19l-7-7 7-7"/></svg>
         Back
       </div>
@@ -272,11 +302,11 @@ export default function App() {
   );
 
   /* ── LESSON PLAYER ── */
-  if (currentModule) return (
+  if (view === 'player' && currentModule) return (
     <div className="page">
       <Nav />
       <div className="player-view fade-up">
-        <div className="player-back" onClick={() => setCurrentModule(null)}>
+        <div className="player-back" onClick={() => go('home')}>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 19l-7-7 7-7"/></svg>
           Back to Dashboard
         </div>
@@ -400,7 +430,7 @@ export default function App() {
       <Nav />
       <div className="forum-header">
         <div><h1>The <span className="grad">Exchange</span></h1><p style={{color:'var(--muted)',marginTop:'.5rem'}}>Learn together, grow faster.</p></div>
-        <button className="btn btn-primary" onClick={() => { if(!isLoggedIn) setView('auth'); else setShowPostModal(true); }}>+ New Discussion</button>
+        <button className="btn btn-primary" onClick={() => { if(!isLoggedIn) go('auth'); else setShowPostModal(true); }}>+ New Discussion</button>
       </div>
       <div className="category-bar">
         {forumCategories.map(c => <button key={c} className={`cat-pill ${activeCat === c ? 'active' : ''}`} onClick={() => setActiveCat(c)}>{c}</button>)}
@@ -469,7 +499,7 @@ export default function App() {
 
   /* ── PROFILE ── */
   if (view === 'profile') {
-    if (!isLoggedIn) { setView('auth'); return null; }
+    if (!isLoggedIn) { go('auth'); return null; }
     return (
       <div className="page fade-up">
         <Nav />
@@ -483,7 +513,7 @@ export default function App() {
               <div className="stat-box"><div className="num">{user.xp}</div><div className="lbl">XP</div></div>
               <div className="stat-box"><div className="num">5</div><div className="lbl">Badges</div></div>
             </div>
-            <button className="btn btn-ghost" style={{width:'100%',marginTop:'2rem'}} onClick={() => { setIsLoggedIn(false); setUser(null); setView('home'); setShowRoadmap(false); setActiveRoadmap(null); setGoal(''); }}>Sign Out</button>
+            <button className="btn btn-ghost" style={{width:'100%',marginTop:'2rem'}} onClick={() => { setIsLoggedIn(false); setUser(null); go('home'); setShowRoadmap(false); setActiveRoadmap(null); setGoal(''); }}>Sign Out</button>
           </div>
           <div>
             <div className="xp-cards card" style={{padding:'2rem',marginBottom:'1.5rem'}}>
@@ -538,10 +568,9 @@ export default function App() {
             {activeRoadmap.map((m, idx) => (
               <div key={m.id} className="card module-card" onClick={() => { 
                 const isSample = idx === 0;
-                if (!isLoggedIn && !isSample) setView('auth');
+                if (!isLoggedIn && !isSample) go('auth');
                 else {
-                  setCurrentModule(m); 
-                  setActiveLesson(CURRICULUM_POOL[m.id]?.[0] || null); 
+                  navigate('/player/' + m.id);
                 }
               }}>
                 <div className="module-card-tag" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
