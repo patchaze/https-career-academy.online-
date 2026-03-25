@@ -19,16 +19,47 @@ const MODULE_LIBRARY = [
 
 const CURRICULUM_POOL = {
   1: [
-    { id: 101, title: 'Tensors & Vector Math', dur: '5:45', status: 'completed', desc: 'Foundations of weights.', quiz: { q: 'What is a tensor?', opts: ['Object', 'Array', 'Vector Array', 'Module'], ans: 2 } },
-    { id: 102, title: 'Activation Functions', dur: '8:30', status: 'current', desc: 'ReLU, Sigmoid, and Tanh.', quiz: { q: 'ReLU output?', opts: ['0-1', 'max(0,x)', '-1 to 1', 'log'], ans: 1 } }
+    { id: 101, title: 'Biological vs Artificial Neurons', status: 'completed', complexity: 'Entry', briefing: `
+        <div class="briefing-section">
+          <h3>The Architecture of Thought</h3>
+          <p>The foundation of Deep Learning lies in replicating the biological neuron's ability to process signals. In this lab, we explore the weighted sum and activation functions.</p>
+          <div class="code-block">
+            # Simple Artificial Neuron Logic\\n
+            def perceptron(inputs, weights, bias):\\n
+                linear_sum = sum(i * w for i, w in zip(inputs, weights)) + bias\\n
+                return 1 if linear_sum > 0 else 0
+          </div>
+          <p>Your goal is to understand how adjusting weights changes the decision boundary of the model.</p>
+        </div>`,
+      missions: ['Compare axonal signal propagation', 'Initialize random weights', 'Simulate a firing threshold']
+    },
+    { id: 102, title: 'Activation Functions Lab', status: 'current', complexity: 'Core', briefing: `
+        <div class="briefing-section">
+          <h3>Beyond Step Functions</h3>
+          <p>Sigmoid, ReLU, and Tanh are the engines of non-linearity. Without them, neural networks would just be complex linear regression models.</p>
+          <div class="code-block">
+            import numpy as np\\n\\n
+            def relu(x):\\n
+                return np.maximum(0, x)
+          </div>
+        </div>`,
+      missions: ['Plot a ReLU curve', 'Identify vanishing gradients', 'Implement a Softmax layer']
+    }
   ],
   2: [
-    { id: 201, title: 'Python for AI', dur: '10:00', status: 'completed', desc: 'Speed up with Numpy.', quiz: { q: 'Main AI lib?', opts: ['Numpy', 'Flask', 'Django', 'React'], ans: 0 } },
-    { id: 202, title: 'Decorators for ML', dur: '7:15', status: 'current', desc: 'Optimization wraps.', quiz: { q: 'Purpose?', opts: ['UI', 'Styling', 'Wrap functions', 'Save db'], ans: 2 } }
+    { id: 201, title: 'Vectors and Tensors', status: 'current', complexity: 'Core', briefing: `
+        <div class="briefing-section">
+          <h3>Multidimensional Data</h3>
+          <p>In Python, everything is a tensor. Understanding the shape and rank of your data is critical for building model pipelines.</p>
+          <div class="code-block">
+            import torch\\n
+            tensor = torch.zeros([3, 224, 224]) # Image representation
+          </div>
+        </div>`,
+      missions: ['Define a 3D tensor', 'Reshape a feature vector', 'Calculate Dot Products']
+    }
   ],
   3: [
-    { id: 301, title: 'Transformer Architecture', dur: '15:20', status: 'completed', desc: 'Self-attention and encoding.', quiz: { q: 'Core block?', opts: ['CNN', 'RNN', 'Attention', 'Dense'], ans: 2 } },
-    { id: 302, title: 'Fine-tuning LLMs', dur: '12:00', status: 'current', desc: 'PEFT and LoRA methods.', quiz: { q: 'What is LoRA?', opts: ['Low-Rank Adapt.', 'High memory', 'Long Range', 'Laser'], ans: 0 } }
   ],
   4: [
     { id: 401, title: 'Advanced Prompting', dur: '6:40', status: 'completed', desc: 'Chain-of-thought and few-shot.', quiz: { q: 'CoT acronym?', opts: ['Call of Train', 'Chain of Thought', 'Cost of Time', 'Core'], ans: 1 } },
@@ -110,8 +141,9 @@ export default function App() {
   const [quizResult, setQuizResult] = useState(null);
   const [levelUpToast, setLevelUpToast] = useState(null);
   const [isSyncing, setIsSyncing]       = useState(false);
+  const [completedMissions, setCompletedMissions] = useState(() => Cloud.load('academy_missions', {}));
 
-  // URL Sync Logic
+  const videoRef = useRef(null); // Keep ref for now to prevent breaking other bits if any
   useEffect(() => {
     const p = location.pathname;
     if (p.startsWith('/player/')) {
@@ -145,7 +177,8 @@ export default function App() {
         Cloud.save('academy_goal', goal),
         Cloud.save('academy_showRoadmap', showRoadmap),
         Cloud.save('academy_cat', activeCat),
-        Cloud.save('academy_roadmap', activeRoadmap)
+        Cloud.save('academy_roadmap', activeRoadmap),
+        Cloud.save('academy_missions', completedMissions)
       ]);
       setIsSyncing(false);
     };
@@ -301,49 +334,59 @@ export default function App() {
     </div>
   );
 
-  /* ── LESSON PLAYER ── */
+  /* ── MISSION LAB ── */
   if (view === 'player' && currentModule) return (
     <div className="page">
       <Nav />
       <div className="player-view fade-up">
         <div className="player-back" onClick={() => go('home')}>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 19l-7-7 7-7"/></svg>
-          Back to Dashboard
+          Back to Command Center
         </div>
 
-        <div className="player-layout">
-          <div>
-            <div className="video-frame">
-              <video ref={videoRef} controls
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                poster="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=900&auto=format"
-              />
-            </div>
+        <div className="lab-layout">
+          <div className="lab-content briefing-card">
             <h1 className="lesson-title">{activeLesson.title}</h1>
-            <p className="lesson-desc">{activeLesson.desc}</p>
-            <div style={{marginTop:'2rem',display:'flex',gap:'1rem'}}>
+            <p className="lesson-desc">Complexity: <b>{activeLesson.complexity}</b> &bull; Target Outcome: Master underlying AI physics.</p>
+            <div dangerouslySetInnerHTML={{ __html: activeLesson.briefing }} />
+            
+            <div style={{marginTop:'3rem',display:'flex',gap:'1rem'}}>
               {isLoggedIn 
                 ? <button className="btn btn-primary" onClick={() => { setQuizOpen(true); setQuizResult(null); }}>Knowledge Check</button>
-                : <button className="btn btn-primary" onClick={() => setView('auth')}>Sign In for Quiz & Progress</button>
+                : <button className="btn btn-primary" onClick={() => go('auth')}>Sign In for Full Access</button>
               }
-              <button className="btn btn-ghost" onClick={() => setCurrentModule(null)}>Back to Roadmap</button>
             </div>
           </div>
 
-          <div className="card curriculum-sidebar">
-            <h3>Course Curriculum</h3>
-            <div className="lesson-list">
-              {CURRICULUM_POOL[currentModule.id]?.map(l => (
-                <div key={l.id} className={`lesson-row ${activeLesson?.id === l.id ? 'active' : ''}`} onClick={() => setActiveLesson(l)}>
-                  <div className={`lesson-num ${l.status === 'completed' ? 'done' : ''}`}>
-                    {l.status === 'completed' ? '✓' : l.id.toString().slice(-1)}
+          <div className="mission-card card">
+            <h3>Module Missions</h3>
+            <div className="mission-list">
+              {activeLesson.missions?.map((m, i) => (
+                <div key={i} className={`mission-item ${completedMissions[activeLesson.id]?.[i] ? 'done' : ''}`}
+                  onClick={() => {
+                    const lessonMissions = completedMissions[activeLesson.id] || {};
+                    setCompletedMissions({...completedMissions, [activeLesson.id]: {...lessonMissions, [i]: !lessonMissions[i]}});
+                  }}>
+                  <div className="mission-check">
+                    {completedMissions[activeLesson.id]?.[i] && <svg fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>}
                   </div>
-                  <div className="lesson-info">
-                    <div className="lesson-name">{l.title}</div>
-                    <div className="lesson-dur">{l.dur}</div>
-                  </div>
+                  <div className="mission-text">{m}</div>
                 </div>
               ))}
+            </div>
+
+            <div className="card curriculum-sidebar" style={{marginTop:'2rem', background:'transparent', padding:0, border:0}}>
+              <h3 style={{fontSize:'.85rem', color:'var(--muted)'}}>Other Lab Briefings</h3>
+              <div className="lesson-list">
+                {CURRICULUM_POOL[currentModule.id]?.map(l => (
+                  <div key={l.id} className={`lesson-row ${activeLesson?.id === l.id ? 'active' : ''}`} onClick={() => setActiveLesson(l)}>
+                    <div className="lesson-info">
+                      <div className="lesson-name" style={{fontSize:'.85rem'}}>{l.title}</div>
+                      <div className="lesson-dur" style={{fontSize:'.75rem'}}>{l.complexity}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
