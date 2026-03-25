@@ -31,7 +31,8 @@ const CURRICULUM_POOL = {
           </div>
           <p>Your goal is to understand how adjusting weights changes the decision boundary of the model.</p>
         </div>`,
-      missions: ['Compare axonal signal propagation', 'Initialize random weights', 'Simulate a firing threshold']
+      missions: ['Compare axonal signal propagation', 'Initialize random weights', 'Simulate a firing threshold'],
+      quiz: { q: 'What is a tensor?', opts: ['Object', 'Array', 'Vector Array', 'Module'], ans: 2 }
     },
     { id: 102, title: 'Activation Functions Lab', status: 'current', complexity: 'Core', briefing: `
         <div class="briefing-section">
@@ -43,7 +44,8 @@ const CURRICULUM_POOL = {
                 return np.maximum(0, x)
           </div>
         </div>`,
-      missions: ['Plot a ReLU curve', 'Identify vanishing gradients', 'Implement a Softmax layer']
+      missions: ['Plot a ReLU curve', 'Identify vanishing gradients', 'Implement a Softmax layer'],
+      quiz: { q: 'ReLU output?', opts: ['0-1', 'max(0,x)', '-1 to 1', 'log'], ans: 1 }
     }
   ],
   2: [
@@ -56,38 +58,40 @@ const CURRICULUM_POOL = {
             tensor = torch.zeros([3, 224, 224]) # Image representation
           </div>
         </div>`,
-      missions: ['Define a 3D tensor', 'Reshape a feature vector', 'Calculate Dot Products']
+      missions: ['Define a 3D tensor', 'Reshape a feature vector', 'Calculate Dot Products'],
+      quiz: { q: 'Main AI lib?', opts: ['Numpy', 'Flask', 'Django', 'React'], ans: 0 }
     }
   ],
   3: [
+    { id: 301, title: 'Attention Lab', status: 'current', complexity: 'Expert', briefing: `
+        <div class="briefing-section">
+          <h3>The Transformer Revolution</h3>
+          <p>Self-attention allows models to weigh the importance of different words in a sentence relative to each other, regardless of distance.</p>
+        </div>`,
+      missions: ['Calculate Query/Key pairs', 'Analyze Positional Encoding', 'Visualize Attention Heads'],
+      quiz: { q: 'Core block?', opts: ['CNN', 'RNN', 'Attention', 'Dense'], ans: 2 }
+    }
   ],
   4: [
-    { id: 401, title: 'Advanced Prompting', dur: '6:40', status: 'completed', desc: 'Chain-of-thought and few-shot.', quiz: { q: 'CoT acronym?', opts: ['Call of Train', 'Chain of Thought', 'Cost of Time', 'Core'], ans: 1 } },
-    { id: 402, title: 'System Instructions', dur: '9:00', status: 'current', desc: 'Setting constraints.', quiz: { q: 'Where are they?', opts: ['User msg', 'System msg', 'Assistant msg', 'Tools'], ans: 1 } }
+    { id: 401, title: 'Advanced Prompting Lab', status: 'current', complexity: 'Entry', briefing: `<p>Strategic prompt engineering using Chain-Of-Thought.</p>`, missions: ['Implement Few-Shot logic', 'Test CoT templates'], quiz: { q: 'CoT acronym?', opts: ['Call of Train', 'Chain of Thought', 'Cost of Time', 'Core'], ans: 1 } },
   ],
   5: [
-    { id: 501, title: 'CI/CD for Machine Learning', dur: '11:10', status: 'completed', desc: 'Automating tests.', quiz: { q: 'Main tool?', opts: ['Vercel', 'Jenkins', 'Postman', 'Notion'], ans: 1 } },
-    { id: 502, title: 'Model Versioning', dur: '8:30', status: 'current', desc: 'Registry and tracking.', quiz: { q: 'Lib for tracking?', opts: ['MLflow', 'Photoshop', 'Git', 'Npm'], ans: 0 } }
+    { id: 501, title: 'CI/CD for MLOps', status: 'current', complexity: 'Expert', briefing: `<p>Automating model deployment pipelines.</p>`, missions: ['Configure Git hooks', 'Monitor drift'], quiz: { q: 'Main tool?', opts: ['Vercel', 'Jenkins', 'Postman', 'Notion'], ans: 1 } },
   ],
   6: [
-    { id: 601, title: 'Vector Embeddings', dur: '10:45', status: 'completed', desc: 'Similarity search math.', quiz: { q: 'Search type?', opts: ['SQL', 'Cosine Similarity', 'Binary', 'Regex'], ans: 1 } },
-    { id: 602, title: 'Pinecone & Milvus', dur: '9:20', status: 'current', desc: 'Scaling vector DBs.', quiz: { q: 'What database?', opts: ['Relational', 'Vector', 'Key-Value', 'Graph'], ans: 1 } }
+    { id: 601, title: 'Vector DB Lab', status: 'current', complexity: 'Core', briefing: `<p>Similarity search at scale.</p>`, missions: ['Indexing vectors', 'Querying with Cosine'], quiz: { q: 'Search type?', opts: ['SQL', 'Cosine Similarity', 'Binary', 'Regex'], ans: 1 } },
   ],
   7: [
-    { id: 701, title: 'CNN Basics', dur: '13:00', status: 'completed', desc: 'Convolutional layers.', quiz: { q: 'Feature extractor?', opts: ['Kernels', 'Buttons', 'Strings', 'Links'], ans: 0 } },
-    { id: 702, title: 'Object Detection', dur: '14:30', status: 'current', desc: 'YOLO vs Faster R-CNN.', quiz: { q: 'YOLO mean?', opts: ['You Only Look Once', 'You Live Once', 'Yellow', 'Yes'], ans: 0 } }
+    { id: 701, title: 'CNN Architecture', status: 'current', complexity: 'Core', briefing: `<p>Feature extraction in computer vision.</p>`, missions: ['Define Pooling layers', 'Visualize Filters'], quiz: { q: 'Feature extractor?', opts: ['Kernels', 'Buttons', 'Strings', 'Links'], ans: 0 } },
   ],
   8: [
-    { id: 801, title: 'Calculus for Deep Learning', dur: '12:15', status: 'completed', desc: 'Gradients and derivatives.', quiz: { q: 'Purpose?', opts: ['Update weights', 'Style', 'Color', 'Sound'], ans: 0 } },
-    { id: 802, title: 'Probability & Distributions', dur: '11:00', status: 'current', desc: 'Likelihood estimation.', quiz: { q: 'Common dist.?', opts: ['Normal', 'Abnormal', 'Square', 'Circle'], ans: 0 } }
+    { id: 801, title: 'DL Calculus', status: 'current', complexity: 'Expert', briefing: `<p>The math behind the gradients.</p>`, missions: ['Calculate Derivatives', 'Update Weights'], quiz: { q: 'Purpose?', opts: ['Update weights', 'Style', 'Color', 'Sound'], ans: 0 } },
   ],
   9: [
-    { id: 901, title: 'AI Bias & Fairness', dur: '9:40', status: 'completed', desc: 'Detecting bias in data.', quiz: { q: 'Bias source?', opts: ['Code', 'Data', 'GPU', 'Internet'], ans: 1 } },
-    { id: 902, title: 'Privacy with LLMs', dur: '10:20', status: 'current', desc: 'Redaction and protection.', quiz: { q: 'PII acronym?', opts: ['Personal Info', 'Private Item', 'Public', 'Post'], ans: 0 } }
+    { id: 901, title: 'Responsible AI', status: 'current', complexity: 'Entry', briefing: `<p>Ethics and privacy in model training.</p>`, missions: ['Scrub PII', 'Audit Bias'], quiz: { q: 'Bias source?', opts: ['Code', 'Data', 'GPU', 'Internet'], ans: 1 } },
   ],
   10: [
-    { id: 1001, title: 'Markov Decision Processes', dur: '14:20', status: 'completed', desc: 'States and rewards.', quiz: { q: 'MDP goal?', opts: ['Maximize Reward', 'Hide', 'Sleep', 'Run'], ans: 0 } },
-    { id: 1002, title: 'Deep Q-Learning', dur: '16:00', status: 'current', desc: 'Neural nets for agents.', quiz: { q: 'Strategy?', opts: ['Greedy', 'Lazy', 'Silent', 'Loud'], ans: 0 } }
+    { id: 1001, title: 'RL Agent Lab', status: 'current', complexity: 'Master', briefing: `<p>Building self-learning agents.</p>`, missions: ['Define Action Space', 'Reward policy'], quiz: { q: 'MDP goal?', opts: ['Maximize Reward', 'Hide', 'Sleep', 'Run'], ans: 0 } },
   ]
 };
 
