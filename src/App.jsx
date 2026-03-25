@@ -147,7 +147,7 @@ export default function App() {
   const [isSyncing, setIsSyncing]       = useState(false);
   const [completedMissions, setCompletedMissions] = useState(() => Cloud.load('academy_missions', {}));
 
-  const videoRef = useRef(null); // Keep ref for now to prevent breaking other bits if any
+
   useEffect(() => {
     const p = location.pathname;
     if (p.startsWith('/player/')) {
@@ -191,7 +191,7 @@ export default function App() {
 
   // View transition
   useEffect(() => { window.scrollTo(0, 0); }, [view]);
-  const videoRef = useRef(null);
+
 
   /* ── helpers ── */
   const login = (e) => {
