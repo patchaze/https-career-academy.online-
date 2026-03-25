@@ -292,7 +292,10 @@ export default function App() {
             <h1 className="lesson-title">{activeLesson.title}</h1>
             <p className="lesson-desc">{activeLesson.desc}</p>
             <div style={{marginTop:'2rem',display:'flex',gap:'1rem'}}>
-              <button className="btn btn-primary" onClick={() => { setQuizOpen(true); setQuizResult(null); }}>Knowledge Check</button>
+              {isLoggedIn 
+                ? <button className="btn btn-primary" onClick={() => { setQuizOpen(true); setQuizResult(null); }}>Knowledge Check</button>
+                : <button className="btn btn-primary" onClick={() => setView('auth')}>Sign In for Quiz & Progress</button>
+              }
               <button className="btn btn-ghost" onClick={() => setCurrentModule(null)}>Back to Roadmap</button>
             </div>
           </div>
@@ -532,15 +535,19 @@ export default function App() {
         <section className="roadmap-section fade-up">
           <h2>Your Path to <span className="grad">{goal || 'AI Mastery'}</span></h2>
           <div className="roadmap-grid">
-            {activeRoadmap.map(m => (
+            {activeRoadmap.map((m, idx) => (
               <div key={m.id} className="card module-card" onClick={() => { 
-                if (!isLoggedIn) setView('auth');
+                const isSample = idx === 0;
+                if (!isLoggedIn && !isSample) setView('auth');
                 else {
                   setCurrentModule(m); 
                   setActiveLesson(CURRICULUM_POOL[m.id]?.[0] || null); 
                 }
               }}>
-                <div className="module-card-tag">{m.tag}</div>
+                <div className="module-card-tag" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <span>{m.tag}</span>
+                  {(idx === 0) && <span style={{background:'var(--emerald)',color:'#fff',padding:'.1rem .4rem',borderRadius:'4px',fontSize:'.6rem',fontWeight:800}}>FREE SAMPLE</span>}
+                </div>
                 <h3>{m.title}</h3>
                 <div className="module-card-meta">{m.lessons} lessons</div>
                 <div className="progress-bar">
