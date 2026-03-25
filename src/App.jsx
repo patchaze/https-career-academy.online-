@@ -246,6 +246,10 @@ export default function App() {
   /* ── AUTH ── */
   if (view === 'auth') return (
     <div className="auth-page fade-up">
+      <div className="auth-back" onClick={() => setView('home')}>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 19l-7-7 7-7"/></svg>
+        Back
+      </div>
       <div className="glow-orb" style={{width:400,height:400,top:'5%',left:'10%',background:'radial-gradient(circle,rgba(99,102,241,.25),transparent 70%)'}}/>
       <div className="card auth-card">
         <h2 className="grad">{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
