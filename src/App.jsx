@@ -85,7 +85,7 @@ const HelpOverlay = ({ setIsHelping }) => (
 // --- MAIN APPLICATION CONTENT ---
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('library'); 
+  const [currentView, setCurrentView] = useState('landing'); 
   const [activeArticle, setActiveArticle] = useState(null);
   const [activeScenarioId, setActiveScenarioId] = useState('exclusion');
   
@@ -515,6 +515,60 @@ export default function App() {
       </div>
     </motion.div>
   );
+
+  const LandingView = () => (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: 'linear-gradient(135deg, #f6faf5 0%, #e6efe8 100%)', overflow: 'auto' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--sage-dark)' }}>
+          <Brain size={24} color="var(--gold)" fill="var(--gold-light)" /> Persona EQ Lab
+        </div>
+        <button onClick={() => setCurrentView('library')} className="btn-pill selected" style={{ padding: '0.8rem 2rem', fontSize: '1rem', boxShadow: '0 4px 15px rgba(150, 175, 151, 0.4)' }}>Enter Lab</button>
+      </header>
+
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '4rem', gap: '4rem', maxWidth: '1400px', margin: '0 auto', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: '400px', zIndex: 10 }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <span style={{ color: 'var(--gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', marginBottom: '1rem', display: 'inline-block' }}>The #1 Emotion Simulator for Kids</span>
+            <h1 style={{ fontSize: 'clamp(3.5rem, 5vw, 5.5rem)', fontWeight: 800, color: 'var(--sage-dark)', lineHeight: 1.05, marginBottom: '1.5rem', letterSpacing: '-0.03em' }}>
+              Master Emotions.<br/>Build Empathy.
+            </h1>
+            <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '2.5rem', maxWidth: '500px' }}>
+              A beautifully crafted, interactive brain lab where kids learn to navigate big feelings, practice empathy, and discover how their minds work.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button onClick={() => setCurrentView('library')} className="btn-pill selected" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', boxShadow: '0 10px 25px rgba(150, 175, 151, 0.3)' }}>Start Playing Free</button>
+              <button onClick={() => setCurrentView('dashboard')} className="btn-pill" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', background: 'white', border: '1px solid var(--glass-border)' }}>Explore the Brain</button>
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div initial={{ opacity: 0, x: 50, scale: 0.95 }} animate={{ opacity: 1, x: 0, scale: 1 }} transition={{ delay: 0.4, duration: 0.8 }} style={{ flex: 1, minWidth: '400px', position: 'relative', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ position: 'absolute', width: '120%', height: '120%', background: 'radial-gradient(circle, rgba(150,175,151,0.2) 0%, rgba(255,255,255,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 0 }} />
+          <img src="/avatar.jpg" alt="Persona EQ Doll" style={{ width: '100%', maxWidth: '520px', borderRadius: '40px', boxShadow: '0 30px 60px rgba(0,0,0,0.15)', zIndex: 1, border: '12px solid white', objectFit: 'cover', aspectRatio: '4/5' }} />
+          
+          <motion.div animate={{ y: [-15, 15, -15] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', top: '15%', right: '-10%', background: 'white', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2 }}>
+            <div style={{ fontSize: '2.5rem' }}>😆</div>
+            <div>
+              <div style={{ fontWeight: 800, color: 'var(--sage-dark)', fontSize: '1.1rem' }}>Joy Unlocked</div>
+              <div style={{ fontSize: '0.9rem', color: 'var(--gold)', fontWeight: 600 }}>+20 Empathy XP</div>
+            </div>
+          </motion.div>
+          
+          <motion.div animate={{ y: [15, -15, 15] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', bottom: '15%', left: '-10%', background: 'white', padding: '1.25rem 1.5rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2 }}>
+            <Activity color="#F07167" size={32} />
+            <div>
+              <div style={{ fontWeight: 800, color: 'var(--text-main)', fontSize: '1.1rem' }}>Amygdala Calmed</div>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Stress levels dropping</div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+
+  if (currentView === 'landing') {
+    return <LandingView />;
+  }
 
   return (
     <div className="app-wrapper">
