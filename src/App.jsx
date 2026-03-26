@@ -142,7 +142,7 @@ export default function App() {
 
   const HeaderNav = () => (
     <header className="top-nav">
-      <div className="logo-area" onClick={() => setCurrentView('library')} style={{ cursor: 'pointer' }}>
+      <div className="logo-area" onClick={() => setCurrentView('landing')} style={{ cursor: 'pointer' }}>
         <Brain size={20} color="var(--gold)" fill="var(--gold-light)" />
         <span>Persona <span style={{ color: 'var(--gold)' }}>EQ</span> Lab</span>
       </div>
@@ -164,6 +164,7 @@ export default function App() {
 
   const ScenarioLibrary = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '0 4rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <BackButton onClick={() => setCurrentView('landing')} />
       <div className="title-area" style={{ marginBottom: '2.5rem' }}>
         <h1 style={{ fontSize: '2.4rem' }}>Select a Simulation</h1>
         <p>Choose an interactive emotional intelligence module to practice today.</p>
@@ -208,7 +209,7 @@ export default function App() {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         <div style={{ padding: '0 2rem' }}>
-           <BackButton onClick={() => setCurrentView('library')} text="Back to Scenario Library" />
+           <BackButton onClick={() => setCurrentView('landing')} />
         </div>
         
         <div className="title-area" style={{ marginTop: '-1rem' }}>
@@ -330,7 +331,7 @@ export default function App() {
 
   const GrowthJourney = () => (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', paddingBottom: '3rem' }}>
-      <BackButton onClick={() => setCurrentView('library')} />
+      <BackButton onClick={() => setCurrentView('landing')} />
       <div className="title-area" style={{ marginBottom: '2.5rem' }}>
         <h1 style={{ fontSize: '2.2rem' }}>Parent Analytics Dashboard</h1>
         <p>Monitor {user?.name || 'your child'}'s emotional intelligence growth over time.</p>
@@ -378,7 +379,7 @@ export default function App() {
 
   const BlogView = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '0 4rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <BackButton onClick={() => setCurrentView('library')} />
+      <BackButton onClick={() => setCurrentView('landing')} />
       <div className="title-area" style={{ marginBottom: '2rem', marginTop: '-1rem' }}>
         <h1 style={{ fontSize: '2.2rem' }}>Parent & Educator Library</h1>
       </div>
@@ -416,7 +417,7 @@ export default function App() {
 
   const DashboardView = () => (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', paddingBottom: '3rem' }}>
-      <BackButton onClick={() => setCurrentView('library')} />
+      <BackButton onClick={() => setCurrentView('landing')} />
       <div className="title-area" style={{ marginBottom: '2.5rem', marginTop: '-1rem' }}>
         <h1 style={{ fontSize: '2.2rem' }}>Learning Lab: Brain & Emotions</h1>
         <p>Discover how your brain works and how emotions physically feel inside your body.</p>
@@ -467,7 +468,7 @@ export default function App() {
 
   const ProfileView = () => (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', paddingBottom: '3rem' }}>
-      <BackButton onClick={() => setCurrentView('library')} />
+      <BackButton onClick={() => setCurrentView('landing')} />
       <div className="title-area" style={{ marginBottom: '2.5rem', marginTop: '-1rem' }}>
         <h1 style={{ fontSize: '2.2rem' }}>Student Profile</h1>
         <p>Customize your learning experience and view your current milestones.</p>
@@ -516,13 +517,38 @@ export default function App() {
     </motion.div>
   );
 
+  const LoginView = () => (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="glass-card" style={{ maxWidth: '450px', width: '100%', padding: '3rem', textAlign: 'center', position: 'relative' }}>
+        <div style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
+           <BackButton onClick={() => setCurrentView('landing')} />
+        </div>
+        <Brain size={48} color="var(--gold)" fill="var(--gold-light)" style={{ marginBottom: '1.5rem', marginTop: '1rem' }} />
+        <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--sage-dark)' }}>Welcome Back</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Sign in to continue your learning journey.</p>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <input type="email" placeholder="Email Address" style={{ padding: '1rem', borderRadius: '12px', border: '1px solid var(--glass-border)', fontSize: '1rem', width: '100%', boxSizing: 'border-box' }} />
+          <input type="password" placeholder="Password" style={{ padding: '1rem', borderRadius: '12px', border: '1px solid var(--glass-border)', fontSize: '1rem', width: '100%', boxSizing: 'border-box' }} />
+          <button className="btn-pill selected" style={{ width: '100%', padding: '1rem', marginTop: '1rem', fontSize: '1.1rem' }}>Sign In</button>
+        </div>
+        <div style={{ marginTop: '2rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+          Don't have an account? <span style={{ color: 'var(--sage)', fontWeight: 600, cursor: 'pointer' }}>Sign up</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   const LandingView = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: 'linear-gradient(135deg, #f6faf5 0%, #e6efe8 100%)', overflow: 'auto' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--sage-dark)' }}>
           <Brain size={24} color="var(--gold)" fill="var(--gold-light)" /> Persona EQ Lab
         </div>
-        <button onClick={() => setCurrentView('library')} className="btn-pill selected" style={{ padding: '0.8rem 2rem', fontSize: '1rem', boxShadow: '0 4px 15px rgba(150, 175, 151, 0.4)' }}>Enter Lab</button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+           <button onClick={() => setCurrentView('login')} className="btn-pill" style={{ padding: '0.8rem 2rem', fontSize: '1rem', background: 'white', border: '1px solid var(--glass-border)' }}>Log In</button>
+           <button onClick={() => setCurrentView('library')} className="btn-pill selected" style={{ padding: '0.8rem 2rem', fontSize: '1rem', boxShadow: '0 4px 15px rgba(150, 175, 151, 0.4)' }}>Enter Lab</button>
+        </div>
       </header>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '4rem', gap: '4rem', maxWidth: '1400px', margin: '0 auto', flexWrap: 'wrap' }}>
@@ -583,11 +609,16 @@ export default function App() {
       { /* NEW VIEWS */ }
       {currentView === 'dashboard' && <DashboardView />}
       {currentView === 'profile' && <ProfileView />}
+      {currentView === 'login' && <LoginView />}
 
       <div className="bottom-footer">
         <div className="user-profile">
           <div className="user-avatar-circle"><User size={16} /></div>
-          {user ? user.name : 'Signing in...'} <Medal size={16} color="var(--gold)" fill="var(--gold)" style={{ marginLeft: '4px' }} />
+          {user ? (
+            <>{user.name} <Medal size={16} color="var(--gold)" fill="var(--gold)" style={{ marginLeft: '4px' }} /></>
+          ) : (
+            <span onClick={() => setCurrentView('login')} style={{ cursor: 'pointer', fontWeight: 600 }}>Sign In / Register</span>
+          )}
         </div>
         <button className="next-lesson" style={{ opacity: isSaving ? 0.5 : 1 }}>
           {isSaving ? 'Saving...' : 'Premium Account'} {!isSaving && <span style={{ fontSize: '1.2rem', paddingLeft: '4px' }}>›</span>}
