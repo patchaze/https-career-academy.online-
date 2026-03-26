@@ -1,0 +1,445 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --app-bg: #e6efe5;
+  --glass-bg: rgba(246, 250, 245, 0.85); /* Slightly more opaque white/sage tint */
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --text-main: #1d2521;
+  --text-muted: #53625b;
+  --sage: #96af97;
+  --sage-dark: #769377;
+  --gold: #dfba55;
+  --gold-light: #f4e8c1;
+  
+  --shadow-soft: 0 10px 40px rgba(0,0,0,0.06);
+  --shadow-card: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-main);
+  background-color: var(--app-bg);
+  
+  /* Large organic background swooshes */
+  background-image: 
+    radial-gradient(circle at 10% 10%, #f4f7f2 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, #d8e5d7 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 10%, #e0ece0 0%, transparent 50%),
+    radial-gradient(circle at 30% 100%, #dde8dc 0%, transparent 50%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Base Wrapper mimicking the whole screen in the mockup */
+.app-wrapper {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px;
+  box-shadow: var(--shadow-soft);
+  width: 100%;
+  max-width: 1100px;
+  min-height: 750px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 2rem;
+}
+
+/* Add golden ring accents in the background of the glass card */
+.app-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  border: 2px solid rgba(223, 186, 85, 0.15);
+  z-index: -1;
+}
+
+.app-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: -150px;
+  left: -100px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  border: 1px solid rgba(150, 175, 151, 0.3);
+  z-index: -1;
+}
+
+/* TOP NAV */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--glass-border);
+  border-radius: 28px 28px 0 0;
+  margin-bottom: 2rem;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--sage-dark);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.nav-link {
+  color: var(--text-main);
+  text-decoration: none;
+  cursor: pointer;
+  padding-bottom: 0.3rem;
+  position: relative;
+}
+
+.nav-link.active {
+  color: var(--text-main);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--text-main);
+  border-radius: 2px;
+}
+
+/* TITLE SECTION */
+.title-area {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title-area h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.title-area p {
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+/* SCENARIO HEADER */
+.scenario-header {
+  padding: 0 4rem;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.scenario-header span {
+  font-weight: 400;
+}
+
+/* MAIN CONTENT GRID */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 110px;
+  gap: 2.5rem;
+  padding: 0 4rem;
+  flex: 1;
+}
+
+/* ====================
+   LEFT: AVATAR
+   ==================== */
+.avatar-section {
+  position: relative;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+  aspect-ratio: 4.5/5;
+  box-shadow: var(--shadow-card);
+  overflow: visible; /* Let bubbles pop out */
+}
+
+/* Using the generated mockup image precisely cropped to show the 3D Avatar! */
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  background-image: url('/avatar.jpg');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+}
+
+.emotion-bubbles-container {
+  position: absolute;
+  right: -30px;
+  top: 15%;
+  bottom: 15%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.emotion-bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.bubble-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.bubble-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+/* ====================
+   CENTER: ACTIVITY
+   ==================== */
+.activity-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+.activity-title span {
+  font-weight: 400;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+}
+
+.how-feel-card {
+  position: relative;
+  border: 2px solid rgba(223, 186, 85, 0.3); /* Subtle gold outer border */
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(240,245,240,0.5));
+}
+
+.how-feel-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.scenario-subtext {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.btn-pill {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255,255,255,0.9);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-pill.selected {
+  background: var(--sage);
+  color: white;
+  border-color: var(--sage);
+  position: relative;
+}
+
+.selected-badge {
+  position: absolute;
+  top: -8px;
+  right: -5px;
+  background: var(--sage-dark);
+  color: white;
+  font-size: 0.55rem;
+  padding: 2px 6px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.vertical-btn {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255,255,255,0.9);
+  padding: 0.75rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text-main);
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  transition: all 0.2s;
+}
+
+/* ====================
+   RIGHT: TOOLBOX
+   ==================== */
+.toolbox-col {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: 30px;
+  padding: 1.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.toolbox-col h4 {
+  font-size: 0.85rem;
+  line-height: 1.2;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.tool-icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.tool-icon-wrapper svg {
+  stroke-width: 1.5;
+}
+
+.tool-title {
+  font-size: 0.7rem;
+  text-align: center;
+  font-weight: 500;
+  max-width: 60px;
+  line-height: 1.1;
+}
+
+/* ====================
+   BOTTOM BAR
+   ==================== */
+.bottom-footer {
+  position: absolute;
+  bottom: 2rem;
+  right: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.3rem 1rem 0.3rem 0.35rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--glass-border);
+}
+
+.user-avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--sage);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.next-lesson {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-main);
+  font-family: inherit;
+}

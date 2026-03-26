@@ -1,0 +1,528 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, Moon, Book, Wind, HelpCircle, Dumbbell, Medal, User, Brain, ArrowLeft, Clock, BarChart2, Activity, ShieldCheck, RefreshCw, Eye, X, Send, Play, Settings, Edit3 } from 'lucide-react';
+import { articles } from './articles';
+import { SCENARIOS } from './scenarios';
+import { AuthService, ProgressService } from './services/api';
+import './index.css';
+
+// --- TOOLBOX OVERLAYS (Extracted to root to prevent React focus/remount bugs) ---
+
+const BreathingOverlay = ({ setIsBreathing }) => (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(255,255,255,0.95)', zIndex: 100, backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: '28px' }}>
+    <button onClick={() => setIsBreathing(false)} style={{ position: 'absolute', top: '2.5rem', right: '3rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-main)', opacity: 0.7 }}><X size={32} /></button>
+    <h2 style={{ fontSize: '2rem', fontWeight: 600, color: 'var(--sage-dark)', marginBottom: '4rem' }}>Calm Down Space</h2>
+    <div style={{ position: 'relative', width: '300px', height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <motion.div animate={{ scale: [1, 1.8, 1.8, 1] }} transition={{ duration: 12, repeat: Infinity, times: [0, 0.4, 0.6, 1], ease: "easeInOut" }} style={{ position: 'absolute', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(150, 175, 151, 0.15)' }} />
+      <motion.div animate={{ scale: [1, 1.5, 1.5, 1] }} transition={{ duration: 12, repeat: Infinity, times: [0, 0.4, 0.6, 1], ease: "easeInOut" }} style={{ position: 'absolute', width: '150px', height: '150px', borderRadius: '50%', background: 'rgba(150, 175, 151, 0.3)' }} />
+      <motion.div style={{ zIndex: 2, background: 'var(--sage)', width: '130px', height: '130px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 600, fontSize: '1.2rem', boxShadow: '0 10px 40px rgba(150, 175, 151, 0.5)' }}>
+        <motion.span animate={{ opacity: [1, 0, 0, 1] }} transition={{ duration: 12, repeat: Infinity, times: [0, 0.35, 0.65, 1] }} style={{ position: 'absolute' }}>Breathe In</motion.span>
+        <motion.span animate={{ opacity: [0, 1, 0, 0] }} transition={{ duration: 12, repeat: Infinity, times: [0, 0.35, 0.65, 1] }} style={{ position: 'absolute' }}>Hold</motion.span>
+        <motion.span animate={{ opacity: [0, 0, 1, 0] }} transition={{ duration: 12, repeat: Infinity, times: [0, 0.35, 0.65, 1] }} style={{ position: 'absolute' }}>Breathe Out</motion.span>
+      </motion.div>
+    </div>
+  </motion.div>
+);
+
+const CalmSpaceOverlay = ({ setIsCalming }) => (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(135deg, #1d2521 0%, #303e38 100%)', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: '28px', overflow: 'hidden' }}>
+    <button onClick={() => setIsCalming(false)} style={{ position: 'absolute', top: '2.5rem', right: '3rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'white', opacity: 0.7, zIndex: 10 }}><X size={32} /></button>
+    <motion.div animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', width: '800px', height: '800px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(150,175,151,0.1) 0%, rgba(0,0,0,0) 70%)' }} />
+    <Moon size={48} color="rgba(255,255,255,0.8)" style={{ marginBottom: '2rem' }} />
+    <h2 style={{ fontSize: '2rem', fontWeight: 500, color: 'white', marginBottom: '1rem', letterSpacing: '0.05em' }}>Sensory Rest Space</h2>
+    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', maxWidth: '400px', textAlign: 'center', lineHeight: '1.6' }}>Close your eyes. Listen to the room around you. Take a break from the screen for 60 seconds.</p>
+  </motion.div>
+);
+
+const JournalOverlay = ({ setIsJournaling }) => {
+  const [journalText, setJournalText] = useState("");
+  
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(246, 250, 245, 0.98)', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem', borderRadius: '28px', overflow: 'hidden', backdropFilter: 'blur(20px)' }}>
+      <button onClick={() => setIsJournaling(false)} style={{ position: 'absolute', top: '2.5rem', right: '3rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-main)', opacity: 0.5 }}><X size={32} /></button>
+      <div className="glass-card" style={{ width: '100%', maxWidth: '700px', background: 'white', padding: '3rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}><Book size={28} color="var(--sage-dark)" /><h2 style={{ fontSize: '1.8rem', fontWeight: 600, color: 'var(--text-main)' }}>Private Reflection</h2></div>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Why did you make the last choice you made? How is the avatar feeling?</p>
+        <textarea autoFocus value={journalText} onChange={(e) => setJournalText(e.target.value)} placeholder="Type your thoughts here..." style={{ flex: 1, width: '100%', borderRadius: '12px', border: '1px solid var(--glass-border)', background: 'var(--app-bg)', padding: '1.5rem', fontSize: '1.1rem', fontFamily: 'inherit', color: 'var(--text-main)', resize: 'none', outline: 'none', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }} />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <button onClick={() => setIsJournaling(false)} style={{ background: 'var(--sage)', color: 'white', border: 'none', padding: '1rem 2rem', borderRadius: '12px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Send size={18} /> Save Entry securely</button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const ExerciseOverlay = ({ setIsExercising }) => {
+  const [timer, setTimer] = useState(30);
+  useEffect(() => { let int = setInterval(() => setTimer(t => (t > 0 ? t - 1 : 0)), 1000); return () => clearInterval(int); }, []);
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(255, 255, 255, 0.95)', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: '28px' }}>
+      <button onClick={() => setIsExercising(false)} style={{ position: 'absolute', top: '2.5rem', right: '3rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-main)' }}><X size={32} /></button>
+      <Dumbbell size={64} color="var(--gold)" style={{ marginBottom: '2rem' }} />
+      <h2 style={{ fontSize: '2.4rem', fontWeight: 700, marginBottom: '1rem' }}>Burn off Cortisol!</h2>
+      <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '3rem' }}>Stand up from your chair and do Jumping Jacks.</p>
+      <div style={{ fontSize: '5rem', fontWeight: 800, color: timer === 0 ? 'var(--sage)' : 'var(--text-main)', background: 'rgba(223, 186, 85, 0.2)', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+        {timer > 0 ? timer : 'Done!'}
+      </div>
+    </motion.div>
+  );
+};
+
+const HelpOverlay = ({ setIsHelping }) => (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: '28px', backdropFilter: 'blur(5px)' }}>
+    <div className="glass-card" style={{ background: 'white', padding: '3rem', maxWidth: '500px', width: '90%', borderRadius: '24px', position: 'relative' }}>
+      <button onClick={() => setIsHelping(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={24} /></button>
+      <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '1rem' }}>How to play this Laboratory</h2>
+      <ul style={{ color: 'var(--text-muted)', lineHeight: '1.6', fontSize: '1.05rem', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <li><strong>The Goal:</strong> Read the scenario and pick the choice you think is most empathetic.</li>
+        <li><strong>The Heatmap:</strong> Watch the four bubbles on the left side. Selecting kind actions will drop the avatar's sadness and anxiety levels!</li>
+        <li><strong>Mistakes:</strong> If you pick a mean or avoidant choice, the avatar might get angry or run away. If this happens, hit the "Restart Simulation" button to try again!</li>
+      </ul>
+    </div>
+  </motion.div>
+);
+
+// --- MAIN APPLICATION CONTENT ---
+
+export default function App() {
+  const [currentView, setCurrentView] = useState('library'); 
+  const [activeArticle, setActiveArticle] = useState(null);
+  const [activeScenarioId, setActiveScenarioId] = useState('exclusion');
+  
+  const [user, setUser] = useState(null);
+  const [growthData, setGrowthData] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const [currentNode, setCurrentNode] = useState('start');
+  const [emotionState, setEmotionState] = useState(SCENARIOS['exclusion'].nodes['start'].emotions);
+  const [history, setHistory] = useState([]);
+  const [isMiaPOV, setIsMiaPOV] = useState(false);
+
+  const [isBreathing, setIsBreathing] = useState(false);
+  const [isCalming, setIsCalming] = useState(false);
+  const [isJournaling, setIsJournaling] = useState(false);
+  const [isHelping, setIsHelping] = useState(false);
+  const [isExercising, setIsExercising] = useState(false);
+
+  useEffect(() => {
+    AuthService.getCurrentUser().then(setUser);
+  }, []);
+
+  useEffect(() => {
+    if (currentView === 'growth') {
+      ProgressService.getGrowthData().then(setGrowthData);
+    }
+  }, [currentView]);
+
+  const startScenario = (id) => {
+    setActiveScenarioId(id);
+    setCurrentNode('start');
+    setEmotionState(SCENARIOS[id].nodes['start'].emotions);
+    setHistory([]);
+    setIsMiaPOV(false);
+    setCurrentView('scenario');
+  };
+
+  const handleChoice = async (choice) => {
+    const activeData = SCENARIOS[activeScenarioId];
+
+    if (choice.target === 'COMPLETE') {
+      setIsSaving(true);
+      await ProgressService.saveScenarioResult(`${activeScenarioId}_01`, emotionState, history);
+      setIsSaving(false);
+      setCurrentView('growth');
+      return;
+    }
+
+    const nextNode = activeData.nodes[choice.target];
+    setHistory([...history, choice.text]);
+    setCurrentNode(choice.target);
+    setEmotionState(nextNode.emotions);
+  };
+
+  const HeaderNav = () => (
+    <header className="top-nav">
+      <div className="logo-area" onClick={() => setCurrentView('library')} style={{ cursor: 'pointer' }}>
+        <Brain size={20} color="var(--gold)" fill="var(--gold-light)" />
+        <span>Persona <span style={{ color: 'var(--gold)' }}>EQ</span> Lab</span>
+      </div>
+      <nav className="nav-links">
+        <a href="#" className={`nav-link ${currentView === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentView('dashboard')}>My Dashboard</a>
+        <a href="#" className={`nav-link ${currentView === 'library' || currentView === 'scenario' ? 'active' : ''}`} onClick={() => setCurrentView('library')}>Scenario Library</a>
+        <a href="#" className={`nav-link ${currentView === 'blog' || currentView === 'article' ? 'active' : ''}`} onClick={() => { setCurrentView('blog'); setActiveArticle(null); }}>Library & Blog</a>
+        <a href="#" className={`nav-link ${currentView === 'growth' ? 'active' : ''}`} onClick={() => setCurrentView('growth')}>Growth Journey</a>
+        <a href="#" className={`nav-link ${currentView === 'profile' ? 'active' : ''}`} onClick={() => setCurrentView('profile')}>Profile</a>
+      </nav>
+    </header>
+  );
+
+  const BackButton = ({ onClick, text = "Back to Home" }) => (
+    <button onClick={onClick} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '2rem', padding: '0.5rem 0', transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--sage-dark)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-muted)'}>
+      <ArrowLeft size={16} /> {text}
+    </button>
+  );
+
+  const ScenarioLibrary = () => (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '0 4rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="title-area" style={{ marginBottom: '2.5rem' }}>
+        <h1 style={{ fontSize: '2.4rem' }}>Select a Simulation</h1>
+        <p>Choose an interactive emotional intelligence module to practice today.</p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
+        {Object.values(SCENARIOS).map((scenario) => {
+          const IconAsset = scenario.icon === 'Users' ? Users : scenario.icon === 'HelpCircle' ? HelpCircle : Dumbbell;
+          return (
+            <motion.div 
+              key={scenario.id}
+              className="glass-card" 
+              whileHover={{ y: -5, boxShadow: '0 12px 30px rgba(0,0,0,0.06)' }}
+              onClick={() => startScenario(scenario.id)}
+              style={{ cursor: 'pointer', border: '1px solid rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ background: 'var(--sage)', color: 'white', padding: '1rem', borderRadius: '16px' }}>
+                  <IconAsset size={28} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>{scenario.title}</h3>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{scenario.subtitle}</span>
+                </div>
+              </div>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: '1.5', marginBottom: '1.5rem', flex: 1 }}>
+                {scenario.nodes.start.text}
+              </p>
+              <button className="btn-pill selected" style={{ width: '100%' }}>Launch Simulation</button>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+
+  const ScenarioBuilder = () => {
+    const activeData = SCENARIOS[activeScenarioId];
+    const nodeData = activeData.nodes[currentNode];
+    const displayText = isMiaPOV ? nodeData.miaText : nodeData.text;
+    
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ padding: '0 2rem' }}>
+           <BackButton onClick={() => setCurrentView('library')} text="Back to Scenario Library" />
+        </div>
+        
+        <div className="title-area" style={{ marginTop: '-1rem' }}>
+          <h1>{activeData.title}</h1>
+          <p>Navigate feelings and build social skills with interactive avatars.</p>
+        </div>
+        
+        <div className="scenario-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <motion.div key={displayText} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} style={{ flex: 1, paddingRight: '2rem' }}>
+            <span style={{ fontWeight: 600 }}>Scenario: </span> 
+            <span style={{ fontWeight: 400 }}>{displayText.replace("Scenario: ", "")}</span>
+            <button style={{ marginLeft: '1rem', background: 'var(--glass-border)', border: 'none', borderRadius: '50%', padding: '0.4rem', cursor: 'pointer', verticalAlign: 'middle', color: 'var(--sage-dark)' }} title="Read Aloud (Concept)">
+              <Play size={14} />
+            </button>
+          </motion.div>
+          
+          <motion.button 
+            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setIsMiaPOV(!isMiaPOV)}
+            style={{ 
+              background: isMiaPOV ? 'var(--sage)' : 'white', color: isMiaPOV ? 'white' : 'var(--sage-dark)', border: `2px solid var(--sage)`, padding: '0.5rem 1.2rem', borderRadius: '30px', 
+              fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: isMiaPOV ? '0 4px 15px rgba(150, 175, 151, 0.4)' : '0 4px 10px rgba(0,0,0,0.05)', 
+              transition: 'background 0.3s, color 0.3s', whiteSpace: 'nowrap'
+            }}
+          >
+            <Eye size={16} /> {isMiaPOV ? "Return to My Eyes" : "See through Mia's Eyes"}
+          </motion.button>
+        </div>
+
+        <div className="main-content">
+          <div className="avatar-section">
+            <motion.div 
+              className="avatar-image"
+              animate={{ filter: isMiaPOV ? 'grayscale(0.5) blur(4px) brightness(0.6)' : 'grayscale(0) blur(0px) brightness(1)', scale: isMiaPOV ? 1.05 : 1 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            />
+            
+            <AnimatePresence>
+              {isMiaPOV && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.5 }}
+                  style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', color: 'white', textShadow: '0 4px 20px rgba(0,0,0,0.8)' }}
+                >
+                  <Eye size={48} style={{ margin: '0 auto', opacity: 0.9, marginBottom: '0.5rem' }} />
+                  <p style={{ fontWeight: 700, fontSize: '1.4rem', letterSpacing: '0.05em' }}>MIA'S POV</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="emotion-bubbles-container">
+              {Object.entries(emotionState).map(([emotion, value]) => (
+                <motion.div 
+                  key={emotion} className="emotion-bubble"
+                  animate={{ opacity: value > 10 ? 1 : 0.3, scale: value > 10 ? 1 : 0.8 }} transition={{ duration: 0.5 }}
+                >
+                  <div className="bubble-circle" style={{ 
+                    border: value > 50 ? '2px solid var(--sage)' : '1px solid rgba(255,255,255,0.9)',
+                    boxShadow: value > 50 ? '0 4px 15px rgba(150, 175, 151, 0.4)' : '0 4px 15px rgba(0,0,0,0.06)'
+                  }}>
+                    {emotion === 'sad' && '😢'}{emotion === 'anxious' && '😟'}{emotion === 'lonely' && '😔'}{emotion === 'worried' && '😦'}
+                  </div>
+                  <span className="bubble-text" style={{ textTransform: 'capitalize' }}>{emotion}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="activity-section">
+            <div className="activity-title">Activity: <span>{nodeData.activity}</span></div>
+            <div className="glass-card how-feel-card">
+              <h3>{nodeData.question}</h3>
+              <div className="scenario-subtext">
+                <Users size={16} /> 
+                <span style={{ fontWeight: isMiaPOV ? 600 : 400, color: isMiaPOV ? 'var(--sage-dark)' : 'inherit' }}>
+                  {isMiaPOV ? "Impacting: You" : "Impacting: Mia's emotions"}
+                </span>
+              </div>
+              <div className="vertical-list" style={{ marginTop: '0.5rem' }}>
+                <AnimatePresence mode="popLayout">
+                  {nodeData.choices.map((choice, idx) => (
+                    <motion.button 
+                      key={choice.text} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ delay: idx * 0.1 }}
+                      className="vertical-btn"
+                      style={{ textAlign: 'left', padding: '1rem', background: choice.target === 'COMPLETE' ? 'var(--gold)' : 'rgba(255, 255, 255, 0.8)' }}
+                      onClick={() => handleChoice(choice)}
+                      onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                      {choice.text}
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {currentNode !== 'start' && !nodeData.choices.some(c => c.target === 'COMPLETE') && (
+              <motion.button 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => startScenario(activeScenarioId)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', alignSelf: 'flex-start', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginTop: '1rem', fontWeight: 600 }}
+              >
+                <RefreshCw size={16} /> Restart Simulation
+              </motion.button>
+            )}
+          </div>
+
+          <div className="toolbox-col">
+            <h4>Coping<br/>Toolbox</h4>
+            <div className="tool-list">
+              <div className="tool-icon-wrapper" onClick={() => setIsCalming(true)} style={{ cursor: 'pointer' }}><Moon size={22} /><span className="tool-title">Calm Space</span></div>
+              <div className="tool-icon-wrapper" onClick={() => setIsJournaling(true)} style={{ cursor: 'pointer' }}><Book size={22} /><span className="tool-title">Journal</span></div>
+              <div className="tool-icon-wrapper" onClick={() => setIsBreathing(true)} style={{ cursor: 'pointer' }}><Wind size={22} /><span className="tool-title">Deep Breathing</span></div>
+              <div className="tool-icon-wrapper" onClick={() => setIsHelping(true)} style={{ cursor: 'pointer' }}><HelpCircle size={22} /><span className="tool-title">Help</span></div>
+              <div className="tool-icon-wrapper" onClick={() => setIsExercising(true)} style={{ cursor: 'pointer' }}><Dumbbell size={22} /><span className="tool-title">Exercise</span></div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const GrowthJourney = () => (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', paddingBottom: '3rem' }}>
+      <BackButton onClick={() => setCurrentView('library')} />
+      <div className="title-area" style={{ marginBottom: '2.5rem' }}>
+        <h1 style={{ fontSize: '2.2rem' }}>Parent Analytics Dashboard</h1>
+        <p>Monitor {user?.name || 'your child'}'s emotional intelligence growth over time.</p>
+      </div>
+      {!growthData ? (
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Syncing with secure server...</div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div className="glass-card" style={{ background: 'rgba(255,255,255,0.7)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', color: 'var(--sage-dark)', fontWeight: 600 }}>
+              <Activity size={20} /> Overall Progress
+            </div>
+            <div style={{ display: 'flex', gap: '2rem' }}>
+              <div>
+                <div style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1, color: 'var(--text-main)' }}>{growthData.sessionsCompleted}</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Simulations Completed</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1, color: 'var(--text-main)' }}>{growthData.averageEmpathyScore || 82}%</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Average Success Rate</div>
+              </div>
+            </div>
+          </div>
+          <div className="glass-card" style={{ background: 'rgba(255,255,255,0.7)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', color: 'var(--sage-dark)', fontWeight: 600 }}>
+              <BarChart2 size={20} /> Skill Breakdown
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {[ { label: 'Conflict Resolution', val: 78 }, { label: 'Emotional Identification', val: 92 }, { label: 'Self Regulation', val: 65 } ].map(skill => (
+                <div key={skill.label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem', fontWeight: 500 }}>
+                    <span>{skill.label}</span><span>{skill.val}%</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', background: 'rgba(0,0,0,0.05)', borderRadius: '10px' }}>
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${skill.val}%` }} transition={{ duration: 1, ease: "easeOut" }} style={{ height: '100%', background: 'var(--sage-dark)', borderRadius: '10px' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+
+  const BlogView = () => (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '0 4rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <BackButton onClick={() => setCurrentView('library')} />
+      <div className="title-area" style={{ marginBottom: '2rem', marginTop: '-1rem' }}>
+        <h1 style={{ fontSize: '2.2rem' }}>Parent & Educator Library</h1>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', overflowY: 'auto', paddingBottom: '2rem', maxHeight: '550px', paddingRight: '1rem' }}>
+        {articles.map((article) => (
+          <div key={article.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(255,255,255,0.9)' }} 
+               onClick={() => { setActiveArticle(article); setCurrentView('article'); }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--sage-dark)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{article.date}</div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', lineHeight: '1.3' }}>{article.title}</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', flex: 1 }}>{article.summary}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+
+  const ArticleReader = () => {
+    if (!activeArticle) return null;
+    return (
+      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', maxHeight: '650px', paddingBottom: '3rem' }}>
+        <BackButton onClick={() => setCurrentView('blog')} text="Back to Library" />
+        <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', padding: '4rem', background: 'rgba(255,255,255,0.85)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, height: '4px', width: '100%', background: 'var(--glass-border)' }}>
+            <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 0.8 }} style={{ height: '100%', background: 'var(--sage)' }} />
+          </div>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h1 style={{ fontSize: '2.6rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '1.2rem', lineHeight: '1.2' }}>{activeArticle.title}</h1>
+            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>By {activeArticle.author}</p>
+          </div>
+          <div style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--text-main)', whiteSpace: 'pre-line' }}>{activeArticle.content}</div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const DashboardView = () => (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', paddingBottom: '3rem' }}>
+      <BackButton onClick={() => setCurrentView('library')} />
+      <div className="title-area" style={{ marginBottom: '2.5rem', marginTop: '-1rem' }}>
+        <h1 style={{ fontSize: '2.2rem' }}>Emotion Glossary</h1>
+        <p>An educational hub for understanding how emotions physically feel inside the body.</p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+        {[
+          { title: 'Anxiety', icon: '😟', desc: 'Your stomach hurts, your breathing feels shallow, and your brain thinks there is a tiger nearby (even if it is just a test).', color: '#E8D5C4' },
+          { title: 'Anger', icon: '😡', desc: 'Your chest feels hot, your fists clench tightly, and you feel a sudden burst of intense energy to protect yourself.', color: '#EAB8B8' },
+          { title: 'Grief', icon: '😢', desc: 'A heavy, sinking feeling in your chest. You might feel very tired, physically cold, and have tears behind your eyes.', color: '#B8CAEA' },
+          { title: 'Joy', icon: '😃', desc: 'Your chest feels light and open. You might feel a buzzing or tingling energy in your arms, and a pull to smile.', color: '#EAE1B8' },
+          { title: 'Loneliness', icon: '😔', desc: 'A hollow feeling in your stomach or heart. You feel cold, isolated, and disconnected from the people around you.', color: '#D5D0D6' },
+          { title: 'Empathy', icon: '🤝', desc: 'A softening in your chest. When you watch someone else hurt, you feel an echo of their pain inside your own body.', color: '#C8E8D5' }
+        ].map(emotion => (
+          <motion.div key={emotion.title} className="glass-card" whileHover={{ y: -5 }} style={{ borderTop: `4px solid ${emotion.color}` }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{emotion.icon}</div>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--sage-dark)' }}>{emotion.title}</h3>
+            <p style={{ color: 'var(--text-main)', lineHeight: '1.6', fontSize: '0.95rem' }}>{emotion.desc}</p>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+
+  const ProfileView = () => (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', paddingBottom: '3rem' }}>
+      <BackButton onClick={() => setCurrentView('library')} />
+      <div className="title-area" style={{ marginBottom: '2.5rem', marginTop: '-1rem' }}>
+        <h1 style={{ fontSize: '2.2rem' }}>Student Profile</h1>
+        <p>Customize your learning experience and view your current milestones.</p>
+      </div>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', marginBottom: '1.5rem', position: 'relative' }}>
+            <User size={64} />
+            <div style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--gold)', borderRadius: '50%', padding: '0.4rem', color: 'white' }}><Edit3 size={16} /></div>
+          </div>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '0.2rem' }}>{user ? user.name : 'Student Name'}</h2>
+          <span style={{ color: 'var(--gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Medal size={16} fill="var(--gold)"/> Premium Member</span>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '1rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem', width: '100%' }}>Joined: March 2026</p>
+        </div>
+        
+        <div className="glass-card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', color: 'var(--sage-dark)', fontWeight: 600 }}>
+             <Settings size={20} /> Account Settings
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-main)' }}>Accessibility Mode</label>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button className="btn-pill selected">Standard View</button>
+                <button className="btn-pill" style={{ background: 'white', border: '1px solid var(--glass-border)' }}>High Contrast</button>
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-main)' }}>Audio Narration (Text-to-Speech)</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <input type="checkbox" id="tts" style={{ width: '18px', height: '18px', accentColor: 'var(--sage)' }} defaultChecked/>
+                <label htmlFor="tts" style={{ color: 'var(--text-muted)' }}>Auto-read scenarios aloud</label>
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-main)' }}>Notification Preferences</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <input type="checkbox" id="notif" style={{ width: '18px', height: '18px', accentColor: 'var(--sage)' }} defaultChecked/>
+                <label htmlFor="notif" style={{ color: 'var(--text-muted)' }}>Email me weekly progress reports</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <div className="app-wrapper">
+      <HeaderNav />
+
+      {currentView === 'library' && <ScenarioLibrary />}
+      {currentView === 'scenario' && <ScenarioBuilder />}
+      {currentView === 'growth' && <GrowthJourney />}
+      {currentView === 'blog' && <BlogView />}
+      {currentView === 'article' && <ArticleReader />}
+      
+      { /* NEW VIEWS */ }
+      {currentView === 'dashboard' && <DashboardView />}
+      {currentView === 'profile' && <ProfileView />}
+
+      <div className="bottom-footer">
+        <div className="user-profile">
+          <div className="user-avatar-circle"><User size={16} /></div>
+          {user ? user.name : 'Signing in...'} <Medal size={16} color="var(--gold)" fill="var(--gold)" style={{ marginLeft: '4px' }} />
+        </div>
+        <button className="next-lesson" style={{ opacity: isSaving ? 0.5 : 1 }}>
+          {isSaving ? 'Saving...' : 'Premium Account'} {!isSaving && <span style={{ fontSize: '1.2rem', paddingLeft: '4px' }}>›</span>}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {isBreathing && <BreathingOverlay setIsBreathing={setIsBreathing} />}
+        {isCalming && <CalmSpaceOverlay setIsCalming={setIsCalming} />}
+        {isJournaling && <JournalOverlay setIsJournaling={setIsJournaling} />}
+        {isExercising && <ExerciseOverlay setIsExercising={setIsExercising} />}
+        {isHelping && <HelpOverlay setIsHelping={setIsHelping} />}
+      </AnimatePresence>
+    </div>
+  );
+}
