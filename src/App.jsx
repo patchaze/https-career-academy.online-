@@ -418,10 +418,34 @@ export default function App() {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '0 4rem', flex: 1, overflowY: 'auto', paddingBottom: '3rem' }}>
       <BackButton onClick={() => setCurrentView('library')} />
       <div className="title-area" style={{ marginBottom: '2.5rem', marginTop: '-1rem' }}>
-        <h1 style={{ fontSize: '2.2rem' }}>Emotion Glossary</h1>
-        <p>An educational hub for understanding how emotions physically feel inside the body.</p>
+        <h1 style={{ fontSize: '2.2rem' }}>Learning Lab: Brain & Emotions</h1>
+        <p>Discover how your brain works and how emotions physically feel inside your body.</p>
       </div>
 
+      <div style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '1.5rem', color: 'var(--sage-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Brain size={24} /> Meet Your Brain</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <motion.div className="glass-card" whileHover={{ y: -5, boxShadow: '0 15px 35px rgba(240, 113, 103, 0.15)' }} style={{ borderLeft: '4px solid #F07167' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#F07167', marginBottom: '0.5rem' }}>The Amygdala</h3>
+            <span style={{ display: 'inline-block', background: 'rgba(240, 113, 103, 0.1)', color: '#F07167', padding: '0.2rem 0.8rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem' }}>🚨 The Security Guard</span>
+            <p style={{ color: 'var(--text-main)', lineHeight: '1.5', fontSize: '0.95rem' }}>Sets off the alarm when it thinks you are in danger! It produces big feelings like anger or fear to protect you, acting super fast before you even think.</p>
+          </motion.div>
+          
+          <motion.div className="glass-card" whileHover={{ y: -5, boxShadow: '0 15px 35px rgba(0, 129, 167, 0.15)' }} style={{ borderLeft: '4px solid #0081A7' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0081A7', marginBottom: '0.5rem' }}>Prefrontal Cortex</h3>
+            <span style={{ display: 'inline-block', background: 'rgba(0, 129, 167, 0.1)', color: '#0081A7', padding: '0.2rem 0.8rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem' }}>🧠 The Wise Boss</span>
+            <p style={{ color: 'var(--text-main)', lineHeight: '1.5', fontSize: '0.95rem' }}>The thinking part of your brain! It helps you solve problems, make good choices, and calm down the Amygdala when there's a false alarm.</p>
+          </motion.div>
+
+          <motion.div className="glass-card" whileHover={{ y: -5, boxShadow: '0 15px 35px rgba(223, 186, 85, 0.15)' }} style={{ borderLeft: '4px solid #DFBA55' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#DFBA55', marginBottom: '0.5rem' }}>The Hippocampus</h3>
+            <span style={{ display: 'inline-block', background: 'rgba(223, 186, 85, 0.1)', color: '#DFBA55', padding: '0.2rem 0.8rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem' }}>📚 The Memory Library</span>
+            <p style={{ color: 'var(--text-main)', lineHeight: '1.5', fontSize: '0.95rem' }}>Stores all your memories and what you've learned. It helps the Prefrontal Cortex remember what worked the last time you felt a big emotion!</p>
+          </motion.div>
+        </div>
+      </div>
+
+      <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '1.5rem', color: 'var(--sage-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Activity size={24} /> Body Emotion Map</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
         {[
           { title: 'Anxiety', icon: '😟', desc: 'Your stomach hurts, your breathing feels shallow, and your brain thinks there is a tiger nearby (even if it is just a test).', color: '#E8D5C4' },
