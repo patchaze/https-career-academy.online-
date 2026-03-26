@@ -85,16 +85,23 @@ const HelpOverlay = ({ setIsHelping }) => (
 // --- MAIN APPLICATION CONTENT ---
 
 export default function App() {
-  const SLUG_TO_ID = {
-    'predictive-empathy-simulations-pediatric-therapy': 49,
-    'mental-health-trends-children-2026': 48,
-    'ai-early-childhood-emotional-learning': 47
+  const ARTICLE_OVERRIDES = {
+    49: 'predictive-empathy-simulations-pediatric-therapy',
+    48: 'mental-health-trends-children-2026',
+    47: 'ai-early-childhood-emotional-learning'
+  };
+
+  const articleToSlug = (article) => {
+    if (ARTICLE_OVERRIDES[article.id]) return ARTICLE_OVERRIDES[article.id];
+    return article.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   };
 
   const getInitialView = () => {
     const path = window.location.pathname.replace('/', '');
-    if (SLUG_TO_ID[path]) return 'article';
-    return path || 'landing';
+    if (!path || path === 'landing') return 'landing';
+    const foundArticleBySlug = articles.find(a => articleToSlug(a) === path);
+    if (foundArticleBySlug) return 'article';
+    return path;
   };
 
   const [currentView, _setCurrentView] = useState(getInitialView); 
@@ -114,10 +121,7 @@ export default function App() {
 
   const [activeArticle, setActiveArticle] = useState(() => {
     const path = window.location.pathname.replace('/', '');
-    if (SLUG_TO_ID[path]) {
-      return articles.find(a => a.id === SLUG_TO_ID[path]);
-    }
-    return null;
+    return articles.find(a => articleToSlug(a) === path) || null;
   });
   const [activeScenarioId, setActiveScenarioId] = useState('exclusion');
   
@@ -459,7 +463,7 @@ export default function App() {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', overflowY: 'auto', paddingBottom: '2rem', maxHeight: '550px', paddingRight: '1rem' }}>
         {[...articles].sort((a, b) => new Date(b.date) - new Date(a.date)).map((article) => {
-          const slug = Object.keys(SLUG_TO_ID).find(key => SLUG_TO_ID[key] === article.id);
+          const slug = articleToSlug(article);
           return (
             <div key={article.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(255,255,255,0.9)' }} 
                  onClick={() => { 
