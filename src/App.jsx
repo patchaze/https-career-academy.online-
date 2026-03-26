@@ -879,7 +879,6 @@ export default function App() {
           <div>
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Company</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('About Us (Our Story)'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>About Us (Our Story)</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Careers'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Careers <span style={{ background: 'var(--sage)', padding: '2px 6px', borderRadius: '10px', fontSize: '0.7rem', color: 'white', marginLeft: '0.5rem' }}>Hiring!</span></a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Contact Us'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Contact Us</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Press Kit'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Press Kit</a></li>
