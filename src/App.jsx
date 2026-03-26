@@ -618,41 +618,85 @@ export default function App() {
     const openGenericPage = (title) => {
       let content = `<p style='margin-bottom: 1rem;'>Welcome to the official <strong>${title}</strong> resource page for Career Academy EQ. We are dedicated to providing complete, transparent, and robust information to our users.</p><p style='margin-bottom: 1rem;'>For detailed inquiries, you can always reach out to our dedicated support team via the platform.</p><p style='margin-bottom: 1rem;'>Career Academy EQ is committed to building the next generation of emotionally intelligent leaders through play, science, and empathy. Your privacy, security, and true educational success are our ultimate priorities.</p><p style='margin-bottom: 1rem;'>We continuously update our resources and policies to reflect the most rigorous standards required for early childhood development. This page is currently maintained by our administrative oversight board and is regularly audited for completeness. Thank you for choosing Career Academy EQ.</p><p style='margin-bottom: 1rem;'>Please check back regularly or contact our general support channel if you require further details.</p>`;
       
-      if (title.includes('Worksheets')) {
+      if (title.includes('Whitepapers')) {
         content = `
-          <div style="background: rgba(150, 175, 151, 0.05); padding: 2.5rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 2.5rem;">
-            <h2 style="font-size: 1.8rem; color: var(--sage-dark); margin-bottom: 1.5rem; font-weight: 700;">Free Printable Worksheets & Educational Resources</h2>
-            <p style="margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">If you are self studying and need worksheets for accounting, business, or office administration, there are excellent open-web alternatives where you can get free printable PDFs without a login:</p>
-            
-            <div style="margin-bottom: 2rem;">
-              <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; font-weight: 700;">Accounting & Bookkeeping</h3>
-              <ul style="list-style-type: none; padding: 0;">
-                <li style="margin-bottom: 1rem; padding-left: 1.5rem; border-left: 3px solid var(--gold);">
-                  <strong>AccountingCoach.com:</strong> Offers a massive library of free, printable accounting worksheets, quizzes, and cheat sheets (covering general journals, balance sheets, and fundamental ledgers).
-                </li>
+          <div style="line-height: 1.6; color: var(--text-main);">
+            <header style="margin-bottom: 3rem;">
+              <h2 style="font-size: 1.8rem; color: var(--sage-dark); border-left: 4px solid var(--gold); padding-left: 1.5rem; margin-bottom: 1.5rem;">Whitepapers and Research</h2>
+              <p style="font-size: 1.15rem; margin-bottom: 1.5rem;">At Career Academy, we build learning experiences based on how children actually learn. That means combining emotional development, active participation, and meaningful practice.</p>
+              <p>Strong <a href="https://casel.org/fundamentals-of-sel/what-does-the-research-say/" target="_blank" rel="noopener noreferrer" style="color: var(--sage-dark); font-weight: 700;">social and emotional learning research</a> shows that children perform better academically and socially when these skills are part of their learning environment.</p>
+            </header>
+
+            <section style="margin-bottom: 3rem; background: rgba(0,0,0,0.02); padding: 2rem; border-radius: 16px;">
+              <h3 style="font-size: 1.4rem; color: var(--gold); margin-bottom: 1rem;">Why emotional learning matters in education</h3>
+              <p style="margin-bottom: 1rem;">Children do not just absorb information. They process it through emotion, attention, and experience.</p>
+              <p style="margin-bottom: 1rem;">Studies in <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8772122/" target="_blank" rel="noopener noreferrer" style="color: var(--sage-dark); text-decoration: underline;">simulation based learning environments</a> show that emotional engagement directly affects memory, focus, and decision making.</p>
+              <p>That is exactly why passive learning alone is not enough anymore.</p>
+            </section>
+
+            <section style="margin-bottom: 3rem;">
+              <h3 style="font-size: 1.4rem; color: var(--gold); margin-bottom: 1rem;">The impact of social and emotional learning on performance</h3>
+              <p style="margin-bottom: 1rem;">Large scale studies have shown that structured SEL programs improve outcomes across the board.</p>
+              <p style="margin-bottom: 1rem;">A well known <a href="https://pubmed.ncbi.nlm.nih.gov/21291449/" target="_blank" rel="noopener noreferrer" style="color: var(--sage-dark); text-decoration: underline;">meta analysis on student outcomes</a> found measurable improvements in academic performance, behavior, and emotional skills.</p>
+              <p>This is not a trend. It is a shift in how effective education works.</p>
+            </section>
+
+            <section style="margin-bottom: 3rem; border-top: 1px solid var(--glass-border); padding-top: 2rem;">
+              <h3 style="font-size: 1.4rem; color: var(--gold); margin-bottom: 1rem;">Why simulation based learning works for kids</h3>
+              <p style="margin-bottom: 1rem;">Simulation creates safe environments where children can practice decisions, communication, and emotional responses.</p>
+              <p style="margin-bottom: 1rem;">Research on <a href="https://ecommons.cornell.edu/server/api/core/bitstreams/a55a3502-d15a-4807-9058-ff3bb1b55465/content" target="_blank" rel="noopener noreferrer" style="color: var(--sage-dark); text-decoration: underline;">experiential learning and simulation training</a> highlights how active participation leads to stronger retention and deeper understanding.</p>
+              <p>Kids learn better when they are part of the experience.</p>
+            </section>
+
+            <section style="margin-bottom: 3rem; background: var(--sage-dark); color: white; padding: 2.5rem; border-radius: 20px;">
+              <h3 style="font-size: 1.5rem; color: var(--gold-light); margin-bottom: 1.5rem;">How Career Academy applies this research</h3>
+              <p style="margin-bottom: 1.5rem;">We translate research into simple, usable learning experiences. Instead of passive lessons, we focus on:</p>
+              <ul style="list-style-type: disc; padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <li>Emotion driven scenarios</li>
+                <li>Decision making practice</li>
+                <li>Reflection moments that reinforce learning</li>
+                <li>Progress tracking beyond completion rates</li>
               </ul>
-            </div>
+              <p style="margin-top: 1.5rem;">Everything is designed to feel natural, engaging, and development focused.</p>
+            </section>
 
-            <div style="margin-bottom: 2rem;">
-              <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; font-weight: 700;">Microsoft Excel & Office Admin</h3>
-              <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div style="padding: 1.2rem; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-                  <strong>Excel-Easy.com & Microsoft Template Gallery:</strong> These platforms provide comprehensive practice worksheets and templates for professional workflow management.
-                </div>
+            <section style="margin-bottom: 3rem;">
+              <h3 style="font-size: 1.4rem; color: var(--sage-dark); margin-bottom: 1.5rem;">Featured whitepapers</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <article style="border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; background: white;">
+                  <h4 style="font-weight: 700; margin-bottom: 0.5rem;">The Science Behind Emotional Simulation for Kids</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Explains how emotional engagement improves memory and learning outcomes.</p>
+                  <a href="#" style="color: var(--sage); font-weight: 600; font-size: 0.9rem;">Download whitepaper</a>
+                </article>
+                <article style="border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; background: white;">
+                  <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Social and Emotional Learning in Digital Education</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Breaks down how SEL can be built into online learning tools without losing human connection.</p>
+                  <a href="#" style="color: var(--sage); font-weight: 600; font-size: 0.9rem;">Download whitepaper</a>
+                </article>
+                <article style="border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; background: white;">
+                  <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Measuring Real Learning in Children</h4>
+                  <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Focuses on how to track confidence, engagement, and emotional growth.</p>
+                  <a href="#" style="color: var(--sage); font-weight: 600; font-size: 0.9rem;">Download whitepaper</a>
+                </article>
               </div>
-            </div>
+            </section>
 
-            <div style="margin-bottom: 1rem;">
-              <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; font-weight: 700;">General Career & Professional Skills</h3>
-              <p style="margin-bottom: 1rem;">We recommend searching for <strong>"Adult Education Career Worksheets PDF"</strong> or visiting established hubs like:</p>
-              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <span style="background: var(--sage); color: white; padding: 0.5rem 1rem; border-radius: 30px; font-weight: 600; font-size: 0.9rem;">Oregon CIS</span>
-                <span style="background: var(--sage); color: white; padding: 0.5rem 1rem; border-radius: 30px; font-weight: 600; font-size: 0.9rem;">Teachtopia</span>
-              </div>
-              <p style="margin-top: 1.5rem; font-style: italic; color: var(--text-muted);">These sites provide business math and adult learning printables designed for immediate practical application.</p>
+            <section style="margin-bottom: 3rem; background: rgba(0,0,0,0.02); padding: 2rem; border-radius: 16px;">
+              <h3 style="font-size: 1.4rem; color: var(--gold); margin-bottom: 1.5rem;">Our research principles</h3>
+              <ul style="list-style-type: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <li style="display: flex; gap: 0.5rem; align-items: center;"><span style="color: var(--sage-dark);">✔</span> Children learn through experience</li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;"><span style="color: var(--sage-dark);">✔</span> Emotional safety comes first</li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;"><span style="color: var(--sage-dark);">✔</span> Engagement should feel natural</li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;"><span style="color: var(--sage-dark);">✔</span> Research should be practical</li>
+              </ul>
+            </section>
+
+            <div style="text-align: center; border: 2px dashed var(--glass-border); padding: 3rem; border-radius: 24px;">
+              <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Work with us</h3>
+              <p style="margin-bottom: 2rem;">We are open to working with educators, schools, and research partners who care about better learning experiences.</p>
+              <button onClick={() => navigateTo('contact')} style="background: var(--sage); color: white; border: none; padding: 1rem 3rem; border-radius: 30px; font-weight: 700; cursor: pointer;">Contact our team</button>
             </div>
           </div>
-          <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-muted);">Career Academy EQ is committed to curating the highest quality external resources to support our community of lifelong learners and self-taught professionals.</p>
         `;
       }
 
