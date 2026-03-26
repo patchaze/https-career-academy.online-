@@ -509,7 +509,11 @@ export default function App() {
             <User size={64} />
             <div style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--gold)', borderRadius: '50%', padding: '0.4rem', color: 'white' }}><Edit3 size={16} /></div>
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '0.2rem' }}>{user ? user.name : 'Student Name'}</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%', marginBottom: '1rem', alignItems: 'center' }}>
+            <input type="text" defaultValue={user ? user.name : ''} placeholder="Student Name" style={{ textAlign: 'center', fontSize: '1.4rem', fontWeight: 700, border: 'none', borderBottom: '2px solid var(--glass-border)', outline: 'none', background: 'transparent', width: '80%', color: 'var(--text-main)', padding: '0.3rem' }} />
+            <input type="text" placeholder="Age / Grade Level" style={{ textAlign: 'center', fontSize: '1rem', border: '1px solid var(--glass-border)', borderRadius: '12px', outline: 'none', background: 'white', width: '80%', color: 'var(--text-main)', padding: '0.5rem' }} />
+            <input type="email" placeholder="Parent Email" style={{ textAlign: 'center', fontSize: '1rem', border: '1px solid var(--glass-border)', borderRadius: '12px', outline: 'none', background: 'white', width: '80%', color: 'var(--text-main)', padding: '0.5rem' }} />
+          </div>
           <span style={{ color: 'var(--gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Medal size={16} fill="var(--gold)"/> Premium Member</span>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '1rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem', width: '100%' }}>Joined: March 2026</p>
         </div>
@@ -568,7 +572,21 @@ export default function App() {
     </motion.div>
   );
 
-  const LandingView = () => (
+  const LandingView = () => {
+    const openGenericPage = (title) => {
+      setActiveArticle({
+        id: title,
+        title: title,
+        author: 'Career Academy Admin',
+        date: 'March 2026',
+        readTime: '3 min read',
+        summary: `Comprehensive resources and information regarding ${title}.`,
+        content: `<p style='margin-bottom: 1rem;'>Welcome to the official <strong>${title}</strong> resource page for Career Academy EQ. We are dedicated to providing complete, transparent, and robust information to our users.</p><p style='margin-bottom: 1rem;'>For detailed inquiries, you can always reach out to our dedicated support team via the platform.</p><p style='margin-bottom: 1rem;'>Career Academy EQ is committed to building the next generation of emotionally intelligent leaders through play, science, and empathy. Your privacy, security, and true educational success are our ultimate priorities.</p><p style='margin-bottom: 1rem;'>We continuously update our resources and policies to reflect the most rigorous standards required for early childhood development. This page is currently maintained by our administrative oversight board and is regularly audited for completeness. Thank you for choosing Career Academy EQ.</p><p style='margin-bottom: 1rem;'>Please check back regularly or contact our general support channel if you require further details.</p>`
+      });
+      setCurrentView('article');
+    };
+
+    return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: 'linear-gradient(135deg, #f6faf5 0%, #e6efe8 100%)', overflow: 'auto', position: 'absolute', top: 0, left: 0, zIndex: 1000 }}>
       {/* Promotional Banner */}
       <div style={{ background: 'var(--gold)', color: '#4a3f12', padding: '0.6rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
@@ -587,8 +605,7 @@ export default function App() {
         </nav>
 
         <div style={{ display: 'flex', gap: '1rem' }}>
-           <button onClick={() => setCurrentView('login')} className="btn-pill" style={{ padding: '0.8rem 2rem', fontSize: '1rem', background: 'white', border: '1px solid var(--glass-border)', fontWeight: 600 }}>Parent Log In</button>
-           <button onClick={() => { setCurrentView('library'); setUser({name: 'Guest Player', level: 1})}} className="btn-pill selected" style={{ padding: '0.8rem 2.5rem', fontSize: '1.05rem', boxShadow: '0 6px 20px rgba(150, 175, 151, 0.4)', fontWeight: 700, borderRadius: '30px' }}>Enter Lab 🔥</button>
+           <button onClick={() => setCurrentView('login')} className="btn-pill" style={{ padding: '0.8rem 2.5rem', fontSize: '1.05rem', background: 'white', border: 'none', boxShadow: '0 6px 20px rgba(150, 175, 151, 0.3)', fontWeight: 700, borderRadius: '30px' }}>Log In</button>
         </div>
       </header>
 
@@ -718,30 +735,30 @@ export default function App() {
           <div>
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Platform</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Scenario Library</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Brain Dashboard</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parent Growth Tracker</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Educator Portal (Schools)</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('library'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Scenario Library</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('dashboard'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Brain Dashboard</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('growth'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parent Growth Tracker</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Educator Portal (Schools)'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Educator Portal (Schools)</a></li>
             </ul>
           </div>
           
           <div>
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Resources</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Whitepapers & Research</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parenting Blog</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Printable Worksheets</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Help Center & FAQs</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Whitepapers & Research'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Whitepapers & Research</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('blog'); setActiveArticle(null); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parenting Blog</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Printable Worksheets'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Printable Worksheets</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Help Center & FAQs'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Help Center & FAQs</a></li>
             </ul>
           </div>
           
           <div>
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Company</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>About Us (Our Story)</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Careers <span style={{ background: 'var(--sage)', padding: '2px 6px', borderRadius: '10px', fontSize: '0.7rem', color: 'white', marginLeft: '0.5rem' }}>Hiring!</span></a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Contact Us</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Press Kit</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('About Us (Our Story)'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>About Us (Our Story)</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Careers'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Careers <span style={{ background: 'var(--sage)', padding: '2px 6px', borderRadius: '10px', fontSize: '0.7rem', color: 'white', marginLeft: '0.5rem' }}>Hiring!</span></a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Contact Us'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Contact Us</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Press Kit'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Press Kit</a></li>
             </ul>
           </div>
         </div>
@@ -749,15 +766,16 @@ export default function App() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
           <div>© 2021-2026 Career Academy Educational Technologies, Inc. All rights reserved.</div>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
-            <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Terms of Service</a>
-            <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Privacy Policy</a>
-            <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Cookie Settings</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Terms of Service'); }} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Terms of Service</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Privacy Policy'); }} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Privacy Policy</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Cookie Settings'); }} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Cookie Settings</a>
             <span>Platform Build v5.4.1</span>
           </div>
         </div>
       </footer>
     </motion.div>
-  );
+    );
+  };
 
   if (currentView === 'landing') {
     return <LandingView />;
