@@ -439,7 +439,7 @@ export default function App() {
         <h1 style={{ fontSize: '2.2rem' }}>Parent & Educator Library</h1>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', overflowY: 'auto', paddingBottom: '2rem', maxHeight: '550px', paddingRight: '1rem' }}>
-        {articles.map((article) => (
+        {[...articles].sort((a, b) => new Date(b.date) - new Date(a.date)).map((article) => (
           <div key={article.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(255,255,255,0.9)' }} 
                onClick={() => { setActiveArticle(article); setCurrentView('article'); }}>
             <div style={{ fontSize: '0.75rem', color: 'var(--sage-dark)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{article.date}</div>
@@ -820,7 +820,6 @@ export default function App() {
               <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('library'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Scenario Library</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('dashboard'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Brain Dashboard</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('growth'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parent Growth Tracker</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Educator Portal (Schools)'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Educator Portal (Schools)</a></li>
             </ul>
           </div>
           
@@ -829,7 +828,6 @@ export default function App() {
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Whitepapers & Research'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Whitepapers & Research</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('blog'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parenting Blog</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Printable Worksheets'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Printable Worksheets</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Help Center & FAQs'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Help Center & FAQs</a></li>
             </ul>
           </div>
