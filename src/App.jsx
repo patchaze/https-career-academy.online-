@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Moon, Book, Wind, HelpCircle, Dumbbell, Medal, User, Brain, ArrowLeft, Clock, BarChart2, Activity, ShieldCheck, RefreshCw, Eye, X, Send, Play, Settings, Edit3 } from 'lucide-react';
+import { Users, Moon, Book, Wind, HelpCircle, Dumbbell, Medal, User, Brain, ArrowLeft, Clock, BarChart2, Activity, ShieldCheck, RefreshCw, Eye, X, Send, Play, Settings, Edit3, Star, Zap, Trophy, Shield, Heart, Award, Globe, CheckCircle2 } from 'lucide-react';
 import { articles } from './articles';
 import { SCENARIOS } from './scenarios';
 import { AuthService, ProgressService } from './services/api';
@@ -85,7 +85,20 @@ const HelpOverlay = ({ setIsHelping }) => (
 // --- MAIN APPLICATION CONTENT ---
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('landing'); 
+  const [currentView, _setCurrentView] = useState(() => window.location.pathname.replace('/', '') || 'landing'); 
+
+  useEffect(() => {
+    const handlePopState = () => {
+      _setCurrentView(window.location.pathname.replace('/', '') || 'landing');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const setCurrentView = (view) => {
+    _setCurrentView(view);
+    window.history.pushState(null, '', `/${view === 'landing' ? '' : view}`);
+  };
   const [activeArticle, setActiveArticle] = useState(null);
   const [activeScenarioId, setActiveScenarioId] = useState('exclusion');
   
@@ -141,18 +154,33 @@ export default function App() {
   };
 
   const HeaderNav = () => (
-    <header className="top-nav">
-      <div className="logo-area" onClick={() => setCurrentView('landing')} style={{ cursor: 'pointer' }}>
-        <Brain size={20} color="var(--gold)" fill="var(--gold-light)" />
-        <span>Persona <span style={{ color: 'var(--gold)' }}>EQ</span> Lab</span>
-      </div>
+    <header className="top-nav" style={{ position: 'relative', zIndex: 50 }}>
+      <a href="/" className="logo-area" onClick={(e) => { e.preventDefault(); setCurrentView('landing'); }} style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
+        <Brain size={28} color="var(--gold)" fill="var(--gold-light)" />
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+          <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>Career Academy <span style={{ color: 'var(--gold)' }}>EQ</span> Lab</span>
+          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Est. 2021 • v5.4.1</span>
+        </div>
+      </a>
       <nav className="nav-links">
-        <a href="#" className={`nav-link ${currentView === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentView('dashboard')}>My Dashboard</a>
-        <a href="#" className={`nav-link ${currentView === 'library' || currentView === 'scenario' ? 'active' : ''}`} onClick={() => setCurrentView('library')}>Scenario Library</a>
-        <a href="#" className={`nav-link ${currentView === 'blog' || currentView === 'article' ? 'active' : ''}`} onClick={() => { setCurrentView('blog'); setActiveArticle(null); }}>Library & Blog</a>
-        <a href="#" className={`nav-link ${currentView === 'growth' ? 'active' : ''}`} onClick={() => setCurrentView('growth')}>Growth Journey</a>
-        <a href="#" className={`nav-link ${currentView === 'profile' ? 'active' : ''}`} onClick={() => setCurrentView('profile')}>Profile</a>
+        <a href="/dashboard" className={`nav-link ${currentView === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('dashboard'); }}>Brain Hub 🧠</a>
+        <a href="/library" className={`nav-link ${currentView === 'library' || currentView === 'scenario' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('library'); }}>Simulations 🎭</a>
+        <a href="/blog" className={`nav-link ${currentView === 'blog' || currentView === 'article' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('blog'); setActiveArticle(null); }}>Parent Blog 📚</a>
+        <a href="/growth" className={`nav-link ${currentView === 'growth' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('growth'); }}>My Growth 📈</a>
       </nav>
+      {user ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'white', padding: '0.5rem 1.5rem', borderRadius: '30px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '2px solid rgba(223, 186, 85, 0.3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#F07167', fontWeight: 700, fontSize: '0.9rem' }} title="14 Day Streak!"><Zap size={18} fill="#F07167" /> 14</div>
+          <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--gold)', fontWeight: 700, fontSize: '0.9rem' }} title="Level 12 Empathy Ninja"><Star size={18} fill="var(--gold)" /> Lvl 12</div>
+          <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => setCurrentView('profile')}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}><User size={18} /></div>
+          </div>
+        </div>
+      ) : (
+        <div style={{ width: '150px' }}></div>
+      )}
     </header>
   );
 
@@ -172,7 +200,8 @@ export default function App() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
         {Object.values(SCENARIOS).map((scenario) => {
-          const IconAsset = scenario.icon === 'Users' ? Users : scenario.icon === 'HelpCircle' ? HelpCircle : Dumbbell;
+          const iconMap = { Users, HelpCircle, Dumbbell, Book, Moon, Clock, Medal };
+          const IconAsset = iconMap[scenario.icon] || Brain;
           return (
             <motion.div 
               key={scenario.id}
@@ -540,55 +569,193 @@ export default function App() {
   );
 
   const LandingView = () => (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: 'linear-gradient(135deg, #f6faf5 0%, #e6efe8 100%)', overflow: 'auto' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--sage-dark)' }}>
-          <Brain size={24} color="var(--gold)" fill="var(--gold-light)" /> Persona EQ Lab
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: 'linear-gradient(135deg, #f6faf5 0%, #e6efe8 100%)', overflow: 'auto', position: 'absolute', top: 0, left: 0, zIndex: 1000 }}>
+      {/* Promotional Banner */}
+      <div style={{ background: 'var(--gold)', color: '#4a3f12', padding: '0.6rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+        <Award size={16} /> Celebrating 5 Years of Building Better Brains (2021-2026) | Join 2.5M+ Kids Worldwide <Award size={16} />
+      </div>
+
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 4rem', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.5)', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.4rem', color: 'var(--sage-dark)' }}>
+          <Brain size={32} color="var(--gold)" fill="var(--gold-light)" /> Career Academy <span style={{ color: 'var(--gold)' }}>EQ</span> Lab
         </div>
+        
+        {/* Top Menu for Landing Page */}
+        <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontWeight: 600, fontSize: '1rem' }}>
+          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('landing'); }} style={{ color: 'var(--text-main)', textDecoration: 'none' }}>Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('blog'); setActiveArticle(null); }} style={{ color: 'var(--sage-dark)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Book size={18} /> Parenting Blog</a>
+        </nav>
+
         <div style={{ display: 'flex', gap: '1rem' }}>
-           <button onClick={() => setCurrentView('login')} className="btn-pill" style={{ padding: '0.8rem 2rem', fontSize: '1rem', background: 'white', border: '1px solid var(--glass-border)' }}>Log In</button>
-           <button onClick={() => setCurrentView('library')} className="btn-pill selected" style={{ padding: '0.8rem 2rem', fontSize: '1rem', boxShadow: '0 4px 15px rgba(150, 175, 151, 0.4)' }}>Enter Lab</button>
+           <button onClick={() => setCurrentView('login')} className="btn-pill" style={{ padding: '0.8rem 2rem', fontSize: '1rem', background: 'white', border: '1px solid var(--glass-border)', fontWeight: 600 }}>Parent Log In</button>
+           <button onClick={() => { setCurrentView('library'); setUser({name: 'Guest Player', level: 1})}} className="btn-pill selected" style={{ padding: '0.8rem 2.5rem', fontSize: '1.05rem', boxShadow: '0 6px 20px rgba(150, 175, 151, 0.4)', fontWeight: 700, borderRadius: '30px' }}>Enter Lab 🔥</button>
         </div>
       </header>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '4rem', gap: '4rem', maxWidth: '1400px', margin: '0 auto', flexWrap: 'wrap' }}>
+      {/* Hero Section */}
+      <div style={{ display: 'flex', alignItems: 'center', padding: '5rem 4rem', gap: '4rem', maxWidth: '1400px', margin: '0 auto', flexWrap: 'wrap', minHeight: '80vh' }}>
         <div style={{ flex: 1, minWidth: '400px', zIndex: 10 }}>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <span style={{ color: 'var(--gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', marginBottom: '1rem', display: 'inline-block' }}>The #1 Emotion Simulator for Kids</span>
-            <h1 style={{ fontSize: 'clamp(3.5rem, 5vw, 5.5rem)', fontWeight: 800, color: 'var(--sage-dark)', lineHeight: 1.05, marginBottom: '1.5rem', letterSpacing: '-0.03em' }}>
-              Master Emotions.<br/>Build Empathy.
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', background: 'white', padding: '0.5rem 1rem', borderRadius: '30px', display: 'inline-flex', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid var(--glass-border)' }}>
+              <div style={{ display: 'flex' }}>
+                {[1,2,3,4,5].map(i => <Star key={i} size={14} fill="var(--gold)" color="var(--gold)" />)}
+              </div>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>4.9/5 from 12,000+ Reviews</span>
+            </div>
+            
+            <h1 style={{ fontSize: 'clamp(3.5rem, 5vw, 6rem)', fontWeight: 800, color: 'var(--sage-dark)', lineHeight: 1.05, marginBottom: '1.5rem', letterSpacing: '-0.03em' }}>
+              Master Emotions.<br/><span style={{ color: 'var(--gold)' }}>Build Empathy.</span>
             </h1>
-            <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '2.5rem', maxWidth: '500px' }}>
-              A beautifully crafted, interactive brain lab where kids learn to navigate big feelings, practice empathy, and discover how their minds work.
+            <p style={{ fontSize: '1.35rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '2.5rem', maxWidth: '600px', fontWeight: 500 }}>
+              The award-winning, research-backed simulator where kids ages 6-12 learn to navigate big feelings, practice conflict resolution, and discover how their minds work in a safe, interactive laboratory.
             </p>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button onClick={() => setCurrentView('library')} className="btn-pill selected" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', boxShadow: '0 10px 25px rgba(150, 175, 151, 0.3)' }}>Start Playing Free</button>
-              <button onClick={() => setCurrentView('dashboard')} className="btn-pill" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', background: 'white', border: '1px solid var(--glass-border)' }}>Explore the Brain</button>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <button onClick={() => { setCurrentView('library'); setUser({name: 'Guest Explorer', xp: 0}) }} className="btn-pill selected" style={{ padding: '1.2rem 3rem', fontSize: '1.2rem', boxShadow: '0 10px 25px rgba(150, 175, 151, 0.4)', fontWeight: 700, borderRadius: '40px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Start Playing Free <Play size={20} fill="white" /></button>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600, display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><CheckCircle2 size={16} color="var(--sage)" /> No credit card required</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><CheckCircle2 size={16} color="var(--sage)" /> COPPA Certified Safe</span>
+              </div>
             </div>
           </motion.div>
         </div>
 
         <motion.div initial={{ opacity: 0, x: 50, scale: 0.95 }} animate={{ opacity: 1, x: 0, scale: 1 }} transition={{ delay: 0.4, duration: 0.8 }} style={{ flex: 1, minWidth: '400px', position: 'relative', display: 'flex', justifyContent: 'center' }}>
-          <div style={{ position: 'absolute', width: '120%', height: '120%', background: 'radial-gradient(circle, rgba(150,175,151,0.2) 0%, rgba(255,255,255,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 0 }} />
-          <img src="/avatar.jpg" alt="Persona EQ Doll" style={{ width: '100%', maxWidth: '520px', borderRadius: '40px', boxShadow: '0 30px 60px rgba(0,0,0,0.15)', zIndex: 1, border: '12px solid white', objectFit: 'cover', aspectRatio: '4/5' }} />
+          <div style={{ position: 'absolute', width: '130%', height: '130%', background: 'radial-gradient(circle, rgba(150,175,151,0.25) 0%, rgba(255,255,255,0) 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 0 }} />
           
-          <motion.div animate={{ y: [-15, 15, -15] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', top: '15%', right: '-10%', background: 'white', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2 }}>
-            <div style={{ fontSize: '2.5rem' }}>😆</div>
+          <img src="/avatar.jpg" alt="Career Academy EQ Doll" style={{ width: '100%', maxWidth: '520px', borderRadius: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.2)', zIndex: 1, border: '16px solid white', objectFit: 'cover', aspectRatio: '4/5', transform: 'rotate(2deg)' }} />
+          
+          <motion.div animate={{ y: [-15, 15, -15] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', top: '10%', right: '-15%', background: 'white', padding: '1.5rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, border: '2px solid rgba(223, 186, 85, 0.3)' }}>
+            <div style={{ fontSize: '2.5rem', background: 'var(--gold-light)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>😆</div>
             <div>
-              <div style={{ fontWeight: 800, color: 'var(--sage-dark)', fontSize: '1.1rem' }}>Joy Unlocked</div>
-              <div style={{ fontSize: '0.9rem', color: 'var(--gold)', fontWeight: 600 }}>+20 Empathy XP</div>
+              <div style={{ fontWeight: 800, color: 'var(--sage-dark)', fontSize: '1.2rem' }}>Joy Unlocked!</div>
+              <div style={{ fontSize: '0.95rem', color: 'var(--gold)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>+50 Empathy XP <Star size={14} fill="var(--gold)" /></div>
             </div>
           </motion.div>
           
-          <motion.div animate={{ y: [15, -15, 15] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', bottom: '15%', left: '-10%', background: 'white', padding: '1.25rem 1.5rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2 }}>
-            <Activity color="#F07167" size={32} />
+          <motion.div animate={{ y: [15, -15, 15] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} style={{ position: 'absolute', bottom: '15%', left: '-15%', background: 'white', padding: '1.25rem 1.5rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, border: '2px solid rgba(150, 175, 151, 0.3)' }}>
+            <div style={{ background: 'rgba(240, 113, 103, 0.1)', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Activity color="#F07167" size={28} />
+            </div>
             <div>
               <div style={{ fontWeight: 800, color: 'var(--text-main)', fontSize: '1.1rem' }}>Amygdala Calmed</div>
-              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Stress levels dropping</div>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600 }}>Stress levels dropping ↓</div>
             </div>
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Trust & Stats Section */}
+      <div style={{ background: 'white', padding: '4rem 0', marginTop: '2rem', borderTop: '1px solid var(--glass-border)', borderBottom: '1px solid var(--glass-border)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem', textAlign: 'center' }}>
+          <div>
+            <div style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--sage-dark)', lineHeight: 1 }}>2.5M+</div>
+            <div style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.5rem' }}>Kids Learning</div>
+          </div>
+          <div style={{ width: '1px', background: 'var(--glass-border)' }}></div>
+          <div>
+            <div style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--gold)', lineHeight: 1 }}>45M+</div>
+            <div style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.5rem' }}>Simulations Played</div>
+          </div>
+          <div style={{ width: '1px', background: 'var(--glass-border)' }}></div>
+          <div>
+            <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#F07167', lineHeight: 1 }}>3,400</div>
+            <div style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.5rem' }}>Partner Schools</div>
+          </div>
+          <div style={{ width: '1px', background: 'var(--glass-border)' }}></div>
+          <div>
+            <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#0081A7', lineHeight: 1 }}>5 Yrs</div>
+            <div style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.5rem' }}>Of Proven Research</div>
+          </div>
+        </div>
+        
+        <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>Trusted by top child development institutions</p>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4rem', flexWrap: 'wrap', opacity: 0.6 }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'serif' }}>Stanford Education</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>Harvard <span style={{ fontWeight: 300 }}>CZD</span></div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontStyle: 'italic' }}>American Ped. Assoc.</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>PBS <span style={{ color: 'var(--sage-dark)' }}>Kids</span> Alliance</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Review Section */}
+      <div style={{ background: 'var(--sage-dark)', padding: '6rem 4rem', color: 'white' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem', gap: '0.5rem' }}>
+            {[1,2,3,4,5].map(i => <Star key={i} size={32} fill="var(--gold)" color="var(--gold)" />)}
+          </div>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.4, marginBottom: '2rem', fontStyle: 'italic' }}>
+            "Career Academy is the only platform we've used in the last 5 years that actually translates screen time into real-world emotional regulation. A complete game-changer for my anxious 8-year-old."
+          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <User size={30} color="var(--sage-dark)" />
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>Dr. Sarah Jenkins</div>
+              <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Child Psychologist & Parent of two, CA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Comprehensive Footer */}
+      <footer style={{ background: '#1d2521', color: 'white', padding: '5rem 4rem 2rem 4rem' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '4rem', marginBottom: '4rem' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.4rem', color: 'white', marginBottom: '1.5rem' }}>
+              <Brain size={24} color="var(--gold)" fill="var(--gold-light)" /> Career Academy <span style={{ color: 'var(--gold)' }}>EQ</span>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              Building the next generation of emotionally intelligent leaders through play, science, and empathy since 2021.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>
+              <Shield size={18} color="var(--sage)" fill="var(--sage)" /> COPPA Safe Harbor Certified
+            </div>
+          </div>
+          
+          <div>
+            <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Platform</h4>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Scenario Library</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Brain Dashboard</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parent Growth Tracker</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Educator Portal (Schools)</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Resources</h4>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Whitepapers & Research</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parenting Blog</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Printable Worksheets</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Help Center & FAQs</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Company</h4>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>About Us (Our Story)</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Careers <span style={{ background: 'var(--sage)', padding: '2px 6px', borderRadius: '10px', fontSize: '0.7rem', color: 'white', marginLeft: '0.5rem' }}>Hiring!</span></a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Contact Us</a></li>
+              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Press Kit</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div style={{ maxWidth: '1200px', margin: '0 auto', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+          <div>© 2021-2026 Career Academy Educational Technologies, Inc. All rights reserved.</div>
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
+            <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Terms of Service</a>
+            <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Privacy Policy</a>
+            <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Cookie Settings</a>
+            <span>Platform Build v5.4.1</span>
+          </div>
+        </div>
+      </footer>
     </motion.div>
   );
 
@@ -611,19 +778,24 @@ export default function App() {
       {currentView === 'profile' && <ProfileView />}
       {currentView === 'login' && <LoginView />}
 
-      <div className="bottom-footer">
-        <div className="user-profile">
-          <div className="user-avatar-circle"><User size={16} /></div>
-          {user ? (
-            <>{user.name} <Medal size={16} color="var(--gold)" fill="var(--gold)" style={{ marginLeft: '4px' }} /></>
-          ) : (
-            <span onClick={() => setCurrentView('login')} style={{ cursor: 'pointer', fontWeight: 600 }}>Sign In / Register</span>
-          )}
+      {currentView !== 'landing' && (
+        <div className="bottom-footer" style={{ zIndex: 60 }}>
+          <div className="user-profile" style={{ boxShadow: '0 4px 15px rgba(0,0,0,0.06)' }}>
+            <div className="user-avatar-circle" style={{ background: 'var(--gold)' }}><Medal size={16} color="#fff" /></div>
+            {user ? (
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{user.name}</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--gold)', fontWeight: 800 }}>PREMIUM (YEAR 3)</div>
+              </div>
+            ) : (
+              <span onClick={() => setCurrentView('login')} style={{ cursor: 'pointer', fontWeight: 600 }}>Sign In / Register</span>
+            )}
+          </div>
+          <button className="next-lesson" style={{ opacity: isSaving ? 0.5 : 1, background: 'var(--text-main)', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '30px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
+            {isSaving ? 'Syncing...' : 'View Transcript'} {!isSaving && <span style={{ fontSize: '1.2rem', paddingLeft: '4px' }}>›</span>}
+          </button>
         </div>
-        <button className="next-lesson" style={{ opacity: isSaving ? 0.5 : 1 }}>
-          {isSaving ? 'Saving...' : 'Premium Account'} {!isSaving && <span style={{ fontSize: '1.2rem', paddingLeft: '4px' }}>›</span>}
-        </button>
-      </div>
+      )}
 
       <AnimatePresence>
         {isBreathing && <BreathingOverlay setIsBreathing={setIsBreathing} />}

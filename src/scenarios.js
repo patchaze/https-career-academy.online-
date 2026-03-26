@@ -456,9 +456,139 @@ export const SCENARIOS = {
         question: "You successfully helped Mia regulate her anxiety and face the challenge.",
         emotions: { sad: 0, anxious: 10, lonely: 0, worried: 0 },
         choices: [
-          { text: "Complete Lesson", target: "COMPLETE" }
         ]
       }
+    }
+  },
+  perf_anxiety: {
+    id: "perf_anxiety",
+    unit: "Unit 3: School & Learning",
+    title: "4. The Math Test",
+    subtitle: "Performance Anxiety & Negative Self-Talk",
+    icon: "Book",
+    color: "#E8D5C4",
+    lessons: [
+      { title: "Inner Critic", content: "That voice saying 'I'm stupid' is just a thought, not a fact.", icon: "Brain" },
+      { title: "Growth Mindset", content: "Mistakes mean your brain is growing.", icon: "Activity" }
+    ],
+    nodes: {
+      start: {
+        text: "Scenario: Leo is staring blankly at a blank math test, whispering 'I can't do this.'",
+        miaText: "Scenario: The numbers look like alien language. You convince yourself you will fail.",
+        activity: "Identify",
+        question: "Leo is frozen. What to do?",
+        emotions: { sad: 40, anxious: 90, lonely: 50, worried: 100 },
+        choices: [
+          { text: "Tell him math is easy", target: "minimize" },
+          { text: "Help him find one easy problem", target: "break_down" }
+        ]
+      },
+      minimize: { text: "Scenario: He feels dumber. He puts his head down.", miaText: "Scenario: You feel misunderstood.", activity: "Fail", question: "Invalidation never works.", emotions: { sad: 80, anxious: 90, lonely: 80, worried: 90 }, choices: [{ text: "Rewind", target: "start" }] },
+      break_down: { text: "Scenario: You find problem #1. He solves it. He smiles.", miaText: "Scenario: One small win builds momentum.", activity: "Success", question: "You broke the freeze cycle.", emotions: { sad: 0, anxious: 0, lonely: 0, worried: 0 }, choices: [{ text: "Complete", target: "COMPLETE" }] }
+    }
+  },
+  bullying: {
+    id: "bullying",
+    unit: "Unit 4: Friendship Dynamics",
+    title: "5. The Lunchroom Whispers",
+    subtitle: "Upstander vs. Bystander",
+    icon: "Users",
+    color: "#D5D0D6",
+    lessons: [
+      { title: "Bystander Effect", content: "When everyone watches, someone needs to step up.", icon: "Eye" }
+    ],
+    nodes: {
+      start: {
+        text: "Scenario: A group is pointing and laughing at a new student.",
+        miaText: "Scenario: You are the new kid, everyone is laughing.",
+        activity: "Action",
+        question: "What do you do?",
+        emotions: { sad: 90, anxious: 80, lonely: 100, worried: 90 },
+        choices: [
+          { text: "Walk past quickly", target: "bystander" },
+          { text: "Go sit next to the new student", target: "upstander" }
+        ]
+      },
+      bystander: { text: "Scenario: The kid eats alone.", miaText: "Scenario: Total isolation.", activity: "Fail", question: "Inaction causes harm.", emotions: { sad: 100, anxious: 80, lonely: 100, worried: 80 }, choices: [{ text: "Rewind", target: "start" }] },
+      upstander: { text: "Scenario: The laughing stops. The kid smiles at you.", miaText: "Scenario: A lifeline.", activity: "Success", question: "You changed a life.", emotions: { sad: 0, anxious: 0, lonely: 0, worried: 0 }, choices: [{ text: "Complete", target: "COMPLETE" }] }
+    }
+  },
+  disappointment: {
+    id: "disappointment",
+    unit: "Unit 1: Inside Out",
+    title: "6. The Canceled Trip",
+    subtitle: "Regulating Huge Letdowns",
+    icon: "Moon",
+    color: "#B8CAEA",
+    lessons: [
+      { title: "The Balloon Pop", content: "Excitement turning to disappointment physically hurts.", icon: "Activity" }
+    ],
+    nodes: {
+      start: {
+        text: "Scenario: The field trip is canceled.",
+        miaText: "Scenario: You packed your bag for weeks. Now nothing.",
+        activity: "Identify",
+        question: "How do you handle the news?",
+        emotions: { sad: 100, anxious: 20, lonely: 30, worried: 20 },
+        choices: [
+          { text: "Scream 'It's not fair!'", target: "react" },
+          { text: "Take a deep breath and cry", target: "feel" }
+        ]
+      },
+      react: { text: "Scenario: You get in trouble for yelling.", miaText: "Scenario: Now you're sad AND grounded.", activity: "Fail", question: "Anger misdirected.", emotions: { sad: 90, anxious: 50, lonely: 50, worried: 50 }, choices: [{ text: "Rewind", target: "start" }] },
+      feel: { text: "Scenario: You let the sadness exist without hurting anyone.", miaText: "Scenario: It sucks, but you are okay.", activity: "Success", question: "Processed safely.", emotions: { sad: 20, anxious: 0, lonely: 0, worried: 0 }, choices: [{ text: "Complete", target: "COMPLETE" }] }
+    }
+  },
+  patience: {
+    id: "patience",
+    unit: "Unit 2: You and Others",
+    title: "7. The Long Line",
+    subtitle: "Frustration Tolerance",
+    icon: "Clock",
+    color: "#DFBA55",
+    lessons: [
+      { title: "Waiting Brain", content: "Waiting feels like forever to a child's brain.", icon: "Brain" }
+    ],
+    nodes: {
+      start: {
+        text: "Scenario: Waiting for 30 minutes for a ride.",
+        miaText: "Scenario: Your legs hurt and you want it NOW.",
+        activity: "Boredom",
+        question: "How to wait?",
+        emotions: { sad: 10, anxious: 40, lonely: 10, worried: 30 },
+        choices: [
+          { text: "Complain repeatedly", target: "complain" },
+          { text: "Play a finding game", target: "game" }
+        ]
+      },
+      complain: { text: "Scenario: Everyone gets annoyed.", miaText: "Scenario: Mom yells.", activity: "Fail", question: "Made it worse.", emotions: { sad: 50, anxious: 50, lonely: 20, worried: 50 }, choices: [{ text: "Rewind", target: "start" }] },
+      game: { text: "Scenario: Time passes quickly.", miaText: "Scenario: That was fun and now it's our turn!", activity: "Success", question: "Distraction works.", emotions: { sad: 0, anxious: 0, lonely: 0, worried: 0 }, choices: [{ text: "Complete", target: "COMPLETE" }] }
+    }
+  },
+  forgiveness: {
+    id: "forgiveness",
+    unit: "Unit 4: Friendships",
+    title: "8. The Stolen Secret",
+    subtitle: "Rebuilding Trust",
+    icon: "Medal",
+    color: "#C8E8D5",
+    lessons: [
+      { title: "Trust Jars", content: "Trust takes a long time to fill up but a second to spill.", icon: "ShieldCheck" }
+    ],
+    nodes: {
+      start: {
+        text: "Scenario: A friend told your secret.",
+        miaText: "Scenario: You feel completely betrayed.",
+        activity: "Betrayal",
+        question: "What now?",
+        emotions: { sad: 80, anxious: 50, lonely: 90, worried: 50 },
+        choices: [
+          { text: "Tell their secret back", target: "revenge" },
+          { text: "Tell them they hurt you", target: "communicate" }
+        ]
+      },
+      revenge: { text: "Scenario: You are both enemies.", miaText: "Scenario: Toxic environment.", activity: "Fail", question: "Retaliation solves nothing.", emotions: { sad: 90, anxious: 90, lonely: 90, worried: 90 }, choices: [{ text: "Rewind", target: "start" }] },
+      communicate: { text: "Scenario: They apologize deeply. Trust will take time, but the relationship is saved.", miaText: "Scenario: They understand they messed up.", activity: "Success", question: "Healthy conflict resolution.", emotions: { sad: 10, anxious: 10, lonely: 10, worried: 10 }, choices: [{ text: "Complete", target: "COMPLETE" }] }
     }
   }
 };
