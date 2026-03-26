@@ -438,7 +438,23 @@ export default function App() {
             <h1 style={{ fontSize: '2.6rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '1.2rem', lineHeight: '1.2' }}>{activeArticle.title}</h1>
             <p style={{ fontSize: '1rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>By {activeArticle.author}</p>
           </div>
-          <div style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--text-main)' }} dangerouslySetInnerHTML={{ __html: activeArticle.content }} />
+          <div 
+             style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--text-main)' }} 
+             dangerouslySetInnerHTML={{ __html: activeArticle.content }} 
+             onClick={(e) => {
+               let target = e.target;
+               if (target.tagName !== 'A' && target.parentElement && target.parentElement.tagName === 'A') {
+                 target = target.parentElement;
+               }
+               if (target.tagName === 'A') {
+                 e.preventDefault();
+                 const href = target.getAttribute('href');
+                 if (href === '/library') setCurrentView('library');
+                 else if (href === '/dashboard') setCurrentView('dashboard');
+                 else if (href === '/blog') setCurrentView('blog');
+               }
+             }}
+          />
         </div>
       </motion.div>
     );
