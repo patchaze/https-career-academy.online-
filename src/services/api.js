@@ -25,13 +25,8 @@ export const AuthService = {
     const user = localStorage.getItem('eq_lab_user');
     if (user) return JSON.parse(user);
     
-    // Default fallback user for the prototype
-    return {
-      id: 'demo_user',
-      name: 'Alex J.',
-      role: 'student',
-      medals: 4
-    };
+    // No default user, force login/guest state
+    return null;
   },
 
   logout: async () => {

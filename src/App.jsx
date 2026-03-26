@@ -438,7 +438,7 @@ export default function App() {
             <h1 style={{ fontSize: '2.6rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '1.2rem', lineHeight: '1.2' }}>{activeArticle.title}</h1>
             <p style={{ fontSize: '1rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>By {activeArticle.author}</p>
           </div>
-          <div style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--text-main)', whiteSpace: 'pre-line' }}>{activeArticle.content}</div>
+          <div style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--text-main)' }} dangerouslySetInnerHTML={{ __html: activeArticle.content }} />
         </div>
       </motion.div>
     );
@@ -791,9 +791,6 @@ export default function App() {
               <span onClick={() => setCurrentView('login')} style={{ cursor: 'pointer', fontWeight: 600 }}>Sign In / Register</span>
             )}
           </div>
-          <button className="next-lesson" style={{ opacity: isSaving ? 0.5 : 1, background: 'var(--text-main)', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '30px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
-            {isSaving ? 'Syncing...' : 'View Transcript'} {!isSaving && <span style={{ fontSize: '1.2rem', paddingLeft: '4px' }}>›</span>}
-          </button>
         </div>
       )}
 
