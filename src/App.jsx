@@ -85,21 +85,40 @@ const HelpOverlay = ({ setIsHelping }) => (
 // --- MAIN APPLICATION CONTENT ---
 
 export default function App() {
-  const [currentView, _setCurrentView] = useState(() => window.location.pathname.replace('/', '') || 'landing'); 
+  const SLUG_TO_ID = {
+    'predictive-empathy-simulations-pediatric-therapy': 49,
+    'mental-health-trends-children-2026': 48,
+    'ai-early-childhood-emotional-learning': 47
+  };
+
+  const getInitialView = () => {
+    const path = window.location.pathname.replace('/', '');
+    if (SLUG_TO_ID[path]) return 'article';
+    return path || 'landing';
+  };
+
+  const [currentView, _setCurrentView] = useState(getInitialView); 
 
   useEffect(() => {
     const handlePopState = () => {
-      _setCurrentView(window.location.pathname.replace('/', '') || 'landing');
+      _setCurrentView(getInitialView());
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const setCurrentView = (view) => {
+  const setCurrentView = (view, path = null) => {
     _setCurrentView(view);
-    window.history.pushState(null, '', `/${view === 'landing' ? '' : view}`);
+    window.history.pushState(null, '', `/${path || (view === 'landing' ? '' : view)}`);
   };
-  const [activeArticle, setActiveArticle] = useState(null);
+
+  const [activeArticle, setActiveArticle] = useState(() => {
+    const path = window.location.pathname.replace('/', '');
+    if (SLUG_TO_ID[path]) {
+      return articles.find(a => a.id === SLUG_TO_ID[path]);
+    }
+    return null;
+  });
   const [activeScenarioId, setActiveScenarioId] = useState('exclusion');
   
   const [user, setUser] = useState(null);
@@ -121,11 +140,11 @@ export default function App() {
     AuthService.getCurrentUser().then(setUser);
   }, []);
 
-  const navigateTo = (view) => {
+  const navigateTo = (view, slug = null) => {
     if (view === 'growth' && !user) {
       setCurrentView('login');
     } else {
-      setCurrentView(view);
+      setCurrentView(view, slug);
       if (view === 'blog') setActiveArticle(null);
     }
     window.scrollTo(0, 0);
@@ -439,14 +458,20 @@ export default function App() {
         <h1 style={{ fontSize: '2.2rem' }}>Parent & Educator Library</h1>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', overflowY: 'auto', paddingBottom: '2rem', maxHeight: '550px', paddingRight: '1rem' }}>
-        {[...articles].sort((a, b) => new Date(b.date) - new Date(a.date)).map((article) => (
-          <div key={article.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(255,255,255,0.9)' }} 
-               onClick={() => { setActiveArticle(article); setCurrentView('article'); }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--sage-dark)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{article.date}</div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', lineHeight: '1.3' }}>{article.title}</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', flex: 1 }}>{article.summary}</p>
-          </div>
-        ))}
+        {[...articles].sort((a, b) => new Date(b.date) - new Date(a.date)).map((article) => {
+          const slug = Object.keys(SLUG_TO_ID).find(key => SLUG_TO_ID[key] === article.id);
+          return (
+            <div key={article.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(255,255,255,0.9)' }} 
+                 onClick={() => { 
+                   setActiveArticle(article); 
+                   navigateTo('article', slug); 
+                 }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--sage-dark)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{article.date}</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', lineHeight: '1.3' }}>{article.title}</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', flex: 1 }}>{article.summary}</p>
+            </div>
+          );
+        })}
       </div>
     </motion.div>
   );
