@@ -121,11 +121,35 @@ export default function App() {
     AuthService.getCurrentUser().then(setUser);
   }, []);
 
+  const navigateTo = (view) => {
+    if (view === 'growth' && !user) {
+      setCurrentView('login');
+    } else {
+      setCurrentView(view);
+      if (view === 'blog') setActiveArticle(null);
+    }
+    window.scrollTo(0, 0);
+  };
+
   useEffect(() => {
-    if (currentView === 'growth') {
+    const viewTitles = {
+      landing: "Career Academy EQ Lab | Number 1 Emotion Simulator for Kids",
+      dashboard: "Brain Hub | Emotional Intelligence Mastery",
+      library: "Simulation Lab | Interactive EQ Training",
+      blog: "Parenting & Educator Library | EQ Resources",
+      article: activeArticle ? `${activeArticle.title} | EQ Lab` : "Article Reader",
+      growth: "My Growth Journey | Career Academy EQ",
+      profile: "Student Profile | Career Academy EQ",
+      login: "Log In | Career Academy EQ Lab"
+    };
+    document.title = viewTitles[currentView] || "Career Academy EQ Lab";
+  }, [currentView, activeArticle]);
+
+  useEffect(() => {
+    if (currentView === 'growth' && user) {
       ProgressService.getGrowthData().then(setGrowthData);
     }
-  }, [currentView]);
+  }, [currentView, user]);
 
   const startScenario = (id) => {
     setActiveScenarioId(id);
@@ -155,7 +179,7 @@ export default function App() {
 
   const HeaderNav = () => (
     <header className="top-nav" style={{ position: 'relative', zIndex: 50 }}>
-      <a href="/" className="logo-area" onClick={(e) => { e.preventDefault(); setCurrentView('landing'); }} style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
+      <a href="/" className="logo-area" onClick={(e) => { e.preventDefault(); navigateTo('landing'); }} style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
         <Brain size={28} color="var(--gold)" fill="var(--gold-light)" />
         <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
           <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>Career Academy <span style={{ color: 'var(--gold)' }}>EQ</span> Lab</span>
@@ -163,10 +187,10 @@ export default function App() {
         </div>
       </a>
       <nav className="nav-links">
-        <a href="/dashboard" className={`nav-link ${currentView === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('dashboard'); }}>Brain Hub 🧠</a>
-        <a href="/library" className={`nav-link ${currentView === 'library' || currentView === 'scenario' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('library'); }}>Simulations 🎭</a>
-        <a href="/blog" className={`nav-link ${currentView === 'blog' || currentView === 'article' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('blog'); setActiveArticle(null); }}>Parent Blog 📚</a>
-        <a href="/growth" className={`nav-link ${currentView === 'growth' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setCurrentView('growth'); }}>My Growth 📈</a>
+        <a href="/dashboard" className={`nav-link ${currentView === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); navigateTo('dashboard'); }}>Brain Hub 🧠</a>
+        <a href="/library" className={`nav-link ${currentView === 'library' || currentView === 'scenario' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); navigateTo('library'); }}>Simulations 🎭</a>
+        <a href="/blog" className={`nav-link ${currentView === 'blog' || currentView === 'article' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); navigateTo('blog'); }}>Parent Blog 📚</a>
+        <a href="/growth" className={`nav-link ${currentView === 'growth' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); navigateTo('growth'); }}>My Growth 📈</a>
       </nav>
       {user ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'white', padding: '0.5rem 1.5rem', borderRadius: '30px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '2px solid rgba(223, 186, 85, 0.3)' }}>
@@ -174,12 +198,14 @@ export default function App() {
           <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--gold)', fontWeight: 700, fontSize: '0.9rem' }} title="Level 12 Empathy Ninja"><Star size={18} fill="var(--gold)" /> Lvl 12</div>
           <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => setCurrentView('profile')}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => navigateTo('profile')}>
             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}><User size={18} /></div>
           </div>
         </div>
       ) : (
-        <div style={{ width: '150px' }}></div>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button onClick={() => navigateTo('login')} className="btn-pill" style={{ padding: '0.5rem 1.2rem', fontSize: '0.9rem', background: 'white', border: '1px solid var(--glass-border)', fontWeight: 600 }}>Sign In</button>
+        </div>
       )}
     </header>
   );
@@ -590,6 +616,46 @@ export default function App() {
 
   const LandingView = () => {
     const openGenericPage = (title) => {
+      let content = `<p style='margin-bottom: 1rem;'>Welcome to the official <strong>${title}</strong> resource page for Career Academy EQ. We are dedicated to providing complete, transparent, and robust information to our users.</p><p style='margin-bottom: 1rem;'>For detailed inquiries, you can always reach out to our dedicated support team via the platform.</p><p style='margin-bottom: 1rem;'>Career Academy EQ is committed to building the next generation of emotionally intelligent leaders through play, science, and empathy. Your privacy, security, and true educational success are our ultimate priorities.</p><p style='margin-bottom: 1rem;'>We continuously update our resources and policies to reflect the most rigorous standards required for early childhood development. This page is currently maintained by our administrative oversight board and is regularly audited for completeness. Thank you for choosing Career Academy EQ.</p><p style='margin-bottom: 1rem;'>Please check back regularly or contact our general support channel if you require further details.</p>`;
+      
+      if (title.includes('Worksheets')) {
+        content = `
+          <div style="background: rgba(150, 175, 151, 0.05); padding: 2.5rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 2.5rem;">
+            <h2 style="font-size: 1.8rem; color: var(--sage-dark); margin-bottom: 1.5rem; font-weight: 700;">Free Printable Worksheets & Educational Resources</h2>
+            <p style="margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">If you are self studying and need worksheets for accounting, business, or office administration, there are excellent open-web alternatives where you can get free printable PDFs without a login:</p>
+            
+            <div style="margin-bottom: 2rem;">
+              <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; font-weight: 700;">Accounting & Bookkeeping</h3>
+              <ul style="list-style-type: none; padding: 0;">
+                <li style="margin-bottom: 1rem; padding-left: 1.5rem; border-left: 3px solid var(--gold);">
+                  <strong>AccountingCoach.com:</strong> Offers a massive library of free, printable accounting worksheets, quizzes, and cheat sheets (covering general journals, balance sheets, and fundamental ledgers).
+                </li>
+              </ul>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+              <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; font-weight: 700;">Microsoft Excel & Office Admin</h3>
+              <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="padding: 1.2rem; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                  <strong>Excel-Easy.com & Microsoft Template Gallery:</strong> These platforms provide comprehensive practice worksheets and templates for professional workflow management.
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; font-weight: 700;">General Career & Professional Skills</h3>
+              <p style="margin-bottom: 1rem;">We recommend searching for <strong>"Adult Education Career Worksheets PDF"</strong> or visiting established hubs like:</p>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <span style="background: var(--sage); color: white; padding: 0.5rem 1rem; border-radius: 30px; font-weight: 600; font-size: 0.9rem;">Oregon CIS</span>
+                <span style="background: var(--sage); color: white; padding: 0.5rem 1rem; border-radius: 30px; font-weight: 600; font-size: 0.9rem;">Teachtopia</span>
+              </div>
+              <p style="margin-top: 1.5rem; font-style: italic; color: var(--text-muted);">These sites provide business math and adult learning printables designed for immediate practical application.</p>
+            </div>
+          </div>
+          <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-muted);">Career Academy EQ is committed to curating the highest quality external resources to support our community of lifelong learners and self-taught professionals.</p>
+        `;
+      }
+
       setActiveArticle({
         id: title,
         title: title,
@@ -597,9 +663,9 @@ export default function App() {
         date: 'March 2026',
         readTime: '3 min read',
         summary: `Comprehensive resources and information regarding ${title}.`,
-        content: `<p style='margin-bottom: 1rem;'>Welcome to the official <strong>${title}</strong> resource page for Career Academy EQ. We are dedicated to providing complete, transparent, and robust information to our users.</p><p style='margin-bottom: 1rem;'>For detailed inquiries, you can always reach out to our dedicated support team via the platform.</p><p style='margin-bottom: 1rem;'>Career Academy EQ is committed to building the next generation of emotionally intelligent leaders through play, science, and empathy. Your privacy, security, and true educational success are our ultimate priorities.</p><p style='margin-bottom: 1rem;'>We continuously update our resources and policies to reflect the most rigorous standards required for early childhood development. This page is currently maintained by our administrative oversight board and is regularly audited for completeness. Thank you for choosing Career Academy EQ.</p><p style='margin-bottom: 1rem;'>Please check back regularly or contact our general support channel if you require further details.</p>`
+        content: content.replace(/[-–—]/g, "")
       });
-      setCurrentView('article');
+      navigateTo('article');
     };
 
     return (
@@ -751,9 +817,9 @@ export default function App() {
           <div>
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Platform</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('library'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Scenario Library</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('dashboard'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Brain Dashboard</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('growth'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parent Growth Tracker</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('library'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Scenario Library</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('dashboard'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Brain Dashboard</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('growth'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parent Growth Tracker</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Educator Portal (Schools)'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Educator Portal (Schools)</a></li>
             </ul>
           </div>
@@ -762,7 +828,7 @@ export default function App() {
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Resources</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Whitepapers & Research'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Whitepapers & Research</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('blog'); setActiveArticle(null); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parenting Blog</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigateTo('blog'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Parenting Blog</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Printable Worksheets'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Printable Worksheets</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); openGenericPage('Help Center & FAQs'); }} style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Help Center & FAQs</a></li>
             </ul>
