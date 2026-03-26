@@ -719,12 +719,6 @@ export default function App() {
                 <li style="display: flex; gap: 0.5rem; align-items: center;"><span style="color: var(--sage-dark);">✔</span> Research should be practical</li>
               </ul>
             </section>
-
-            <div style="text-align: center; border: 2px dashed var(--glass-border); padding: 3rem; border-radius: 24px;">
-              <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Work with us</h3>
-              <p style="margin-bottom: 2rem;">We are open to working with educators, schools, and research partners who care about better learning experiences.</p>
-              <button onClick={() => navigateTo('contact')} style="background: var(--sage); color: white; border: none; padding: 1rem 3rem; border-radius: 30px; font-weight: 700; cursor: pointer;">Contact our team</button>
-            </div>
           </div>
         `;
       }
